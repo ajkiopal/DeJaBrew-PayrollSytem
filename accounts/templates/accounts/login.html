@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <body>
+    <h2>DejabPayroll Login</h2>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div>
+        <label>Employee ID</label>
+        <input name="employee_id" />
+      </div>
+
+      <div>
+        <label>Password</label>
+        <input type="password" name="password" />
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+
+    {% for message in messages %}
+      <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+  </body>
+</html>
