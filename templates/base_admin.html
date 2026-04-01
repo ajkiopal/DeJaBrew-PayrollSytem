@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}DejaBrew Payroll{% endblock %}</title>
+
+  <style>
+    :root{
+      --bg:#fff;
+      --nav:#cbb6a8;
+      --navText:#000;
+      --danger:#ff0000;
+      --ok:#1aa657;
+      --shadow:0 10px 28px rgba(0,0,0,.10);
+    }
+
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+    body{margin:0;background:var(--bg);color:#000;}
+
+    .top{padding:20px 28px;display:flex;justify-content:center;}
+    .navpill{
+      width:min(1180px, 100%);
+      background:var(--nav);
+      border-radius:40px;
+      padding:18px 28px;
+      display:flex;align-items:center;gap:28px;
+    }
+    .logo{width:42px;height:42px;display:grid;place-items:center;}
+    .tabs{display:flex;gap:40px;align-items:center;flex:1;font-size:26px;}
+    .tab{ text-decoration:none;color:var(--navText); opacity:.85;font-weight:500; }
+    .tab.active{opacity:1;font-weight:1000;}
+    .right{display:flex;gap:14px;align-items:center;}
+    .right svg{width:34px;height:34px;}
+
+    .content{
+      width:min(1180px, 100%);
+      margin:18px auto 0;
+      padding:0 28px 40px;
+    }
+
+    .logout-btn{
+      background:none;border:none;cursor:pointer;padding:0;display:grid;place-items:center;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <div class="top">
+    <div class="navpill">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none">
+          <path d="M32 6l6 10 12-2-2 12 10 6-10 6 2 12-12-2-6 10-6-10-12 2 2-12-10-6 10-6-2-12 12 2 6-10Z" stroke="#000" stroke-width="2"/>
+          <circle cx="32" cy="32" r="8" stroke="#000" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <div class="tabs">
+        <a class="tab {% block nav_employees_active %}{% endblock %}" href="{% url 'admin_employees_home' %}">Employees</a>
+        <a class="tab" href="#" title="Not implemented yet">Shift Management</a>
+        <a class="tab" href="#" title="Not implemented yet">View Requests</a>
+        <a class="tab {% block nav_payroll_active %}{% endblock %}"href="{% url 'payroll_run_create' %}">Payroll</a>
+        <a class="tab {% block nav_attendance_active %}{% endblock %}" href="{% url 'upload_csv' %}">Upload CSV</a>
+      </div>
+
+      <div class="right">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="#000" stroke-width="2"/>
+          <path d="M4 22a8 8 0 0 1 16 0" stroke="#000" stroke-width="2"/>
+        </svg>
+
+        <form method="post" action="{% url 'logout' %}" style="margin:0;">
+          {% csrf_token %}
+          <button class="logout-btn" type="submit" title="Logout">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M10 17l5-5-5-5" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M15 12H3" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+              <path d="M21 3v18" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

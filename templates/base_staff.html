@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Staff{% endblock %}</title>
+
+  <style>
+    :root{
+      --bg:#fff;
+      --nav:#b8c4a8; /* slightly different tone so staff UI feels different */
+      --navText:#000;
+      --shadow:0 10px 28px rgba(0,0,0,.10);
+    }
+
+    body{
+      margin:0;
+      background:var(--bg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    }
+
+    .top{
+      padding:20px 28px;
+      display:flex;
+      justify-content:center;
+    }
+
+    .navpill{
+      width:min(1180px, 100%);
+      background:var(--nav);
+      border-radius:40px;
+      padding:18px 28px;
+      display:flex;
+      align-items:center;
+      gap:28px;
+    }
+
+    .tabs{
+      display:flex;
+      gap:48px;
+      align-items:center;
+      flex:1;
+      font-size:22px;
+    }
+
+    .tab{
+      text-decoration:none;
+      color:var(--navText);
+      opacity:.85;
+      font-weight:500;
+    }
+
+    .tab.active{
+      opacity:1;
+      font-weight:900;
+    }
+
+    .content{
+      width:min(1180px, 100%);
+      margin:18px auto;
+      padding:0 28px 40px;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<div class="top">
+  <div class="navpill">
+    <div class="tabs">
+      <a class="tab {% block nav_staff_home %}{% endblock %}" href="{% url 'staff_home' %}">Submit Requests</a>
+      <a class="tab {% block nav_staff_attendance %}{% endblock %}" href="#">My Requests</a>
+      <a class="tab {% block nav_staff_payslips %}{% endblock %}" href="#">View Schedule</a>
+      <a class="tab {% block nav_staff_payslips %}{% endblock %}" href="#">View Payslip</a>
+    </div>
+
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" style="background:none;border:none;cursor:pointer;font-weight:bold;">
+        Logout
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="content">
+  {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
