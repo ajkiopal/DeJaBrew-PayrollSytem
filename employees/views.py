@@ -1,10 +1,10 @@
-from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
-from .forms import EmployeeCreateForm, EmployeeEditForm, generate_temp_password
+from .forms import EmployeeCreateForm, EmployeeEditForm
 from .models import Employee
 
 
@@ -16,9 +16,14 @@ def admin_required(view_func):
 
         emp = Employee.objects.filter(employee_id=emp_id, is_active=True).first()
         if not emp:
+            request.session.flush()
             return redirect("login")
 
-        if emp.role not in ("Admin/Manager", "Manager"):
+        if emp.must_change_password:
+            return redirect("set_first_password")
+
+        # Only Admin/Manager can access admin pages
+        if emp.role != "Admin/Manager":
             return HttpResponseForbidden("Admins only.")
 
         request.current_employee = emp
@@ -30,11 +35,15 @@ def employee_required(view_func):
     def wrapper(request, *args, **kwargs):
         emp_id = request.session.get("employee_id")
         if not emp_id:
-            return HttpResponseForbidden("Not logged in.")
+            return redirect("login")
 
         emp = Employee.objects.filter(employee_id=emp_id, is_active=True).first()
         if not emp:
-            return HttpResponseForbidden("Invalid employee.")
+            request.session.flush()
+            return redirect("login")
+
+        if emp.must_change_password:
+            return redirect("set_first_password")
 
         request.current_employee = emp
         return view_func(request, *args, **kwargs)
@@ -44,9 +53,11 @@ def employee_required(view_func):
 @employee_required
 def employee_home(request):
     emp = request.current_employee
-    return render(request, "employees/employee_home.html", {
-        "employee": emp
-    })
+
+    if emp.role == "Admin/Manager":
+        return redirect("admin_employees_home")
+
+    return render(request, "base_staff.html", {"employee": emp})
 
 
 @admin_required
@@ -77,15 +88,23 @@ def admin_employees_home(request):
 
                 duplicate_exists = Employee.objects.filter(
                     name=cleaned["name"],
+                    address=cleaned["address"],
+                    job_title=cleaned["job_title"],
+                    salary_rate=cleaned["salary_rate"],
                     contact_number=cleaned["contact_number"],
                     date_hired=cleaned["date_hired"],
+                    role=cleaned["role"],
                 ).exists()
 
                 if duplicate_exists:
                     add_form.add_error(None, "This employee record already exists.")
                     show_add_validation = True
                 else:
-                    add_form.save()
+                    emp = add_form.save(commit=False)
+                    emp.password_hash = make_password("00000")
+                    emp.must_change_password = True
+                    emp.save()
+
                     messages.success(request, "Employee successfully added.")
                     return redirect("admin_employees_home")
             else:
@@ -136,11 +155,12 @@ def admin_employees_home(request):
 def employee_reset_password(request, employee_id):
     emp = get_object_or_404(Employee, employee_id=employee_id)
 
-    temp_password = generate_temp_password()
-    emp.password_hash = make_password(temp_password)
+    emp.password_hash = make_password("00000")
     emp.must_change_password = True
     emp.save()
 
-    messages.success(request, "Temporary password reset successful.")
-    messages.success(request, "User will be required to change password on next login.")
+    messages.success(request, f"Password for {emp.name} has been reset to the temporary default password.")
+    messages.success(request, "The employee will be required to set a new password on next login.")
     return redirect("admin_employees_home")
+
+employees_home = admin_employees_home

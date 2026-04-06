@@ -31,13 +31,34 @@ def validate_contact_number(value: str):
 
 class BaseEmployeeForm(forms.ModelForm):
     def apply_ui(self):
-        self.fields["name"].widget.attrs.update({"class": "inp", "placeholder": "Name"})
-        self.fields["address"].widget.attrs.update({"class": "inp", "placeholder": "Address"})
-        self.fields["job_title"].widget.attrs.update({"class": "inp", "placeholder": "Job Title"})
-        self.fields["salary_rate"].widget.attrs.update({"class": "inp", "placeholder": "Salary (rate per hour)"})
-        self.fields["contact_number"].widget.attrs.update(
-            {"class": "inp", "placeholder": "Contact Number (####-###-####)"}
-        )
+        self.fields["name"].widget.attrs.update({
+            "class": "inp",
+            "placeholder": "Name",
+            "maxlength": "50"
+        })
+
+        self.fields["address"].widget.attrs.update({
+            "class": "inp",
+            "placeholder": "Address",
+            "maxlength": "150"
+        })
+
+        self.fields["job_title"].widget.attrs.update({
+            "class": "inp",
+            "placeholder": "Job Title",
+            "maxlength": "25"
+        })
+
+        self.fields["salary_rate"].widget.attrs.update({
+            "class": "inp",
+            "placeholder": "Salary (rate per hour)"
+        })
+
+        self.fields["contact_number"].widget.attrs.update({
+            "class": "inp",
+            "placeholder": "Contact Number (####-###-####)",
+            "maxlength": "13"
+        })
         self.fields["role"].widget.attrs.update({"class": "sel"})
         self.fields["date_hired"].widget = forms.DateInput(
             attrs={
