@@ -1,4 +1,5 @@
 <!doctype html>
+{% load static %}
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -26,7 +27,8 @@
       padding:18px 28px;
       display:flex;align-items:center;gap:28px;
     }
-    .logo{width:42px;height:42px;display:grid;place-items:center;}
+    .logo{display:flex;align-items:center;}
+    .logo img{height:42px;width:auto;object-fit:contain;}
     .tabs{display:flex;gap:40px;align-items:center;flex:1;font-size:26px;}
     .tab{ text-decoration:none;color:var(--navText); opacity:.85;font-weight:500; }
     .tab.active{opacity:1;font-weight:1000;}
@@ -50,11 +52,8 @@
 <body>
   <div class="top">
     <div class="navpill">
-      <div class="logo" aria-hidden="true">
-        <svg viewBox="0 0 64 64" fill="none">
-          <path d="M32 6l6 10 12-2-2 12 10 6-10 6 2 12-12-2-6 10-6-10-12 2 2-12-10-6 10-6-2-12 12 2 6-10Z" stroke="#000" stroke-width="2"/>
-          <circle cx="32" cy="32" r="8" stroke="#000" stroke-width="2"/>
-        </svg>
+      <div class="logo">
+        <img src="{% static 'images/dejabrew-logo.png' %}" alt="Logo">
       </div>
 
       <div class="tabs">
