@@ -1,0 +1,53 @@
+{% extends "base_admin.html" %}
+{% block title %}Attendance Upload{% endblock %}
+{% block nav_attendance_active %}active{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  .layout { display:flex; gap:18px; align-items:flex-start; }
+  .side {
+    width:220px;
+    border-radius:18px;
+    padding:16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.10);
+  }
+  .maincard { flex:1; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="layout">
+  <div class="side">
+    <h5 class="fw-bold mb-3">Attendance</h5>
+    <a class="btn btn-outline-secondary w-100 rounded-pill mb-2" href="{% url 'upload_csv' %}">
+      Upload CSV
+    </a>
+    <a class="btn btn-outline-secondary w-100 rounded-pill mb-2" href="{% url 'import_history' %}">
+      History
+    </a>
+    <a class="btn btn-outline-secondary w-100 rounded-pill" href="{% url 'export_attendance' %}">
+      Export Attendance
+    </a>
+  </div>
+
+  <div class="maincard">
+    <div class="content-card shadow-sm p-5 text-center" style="background-color: white; border-radius: 25px;">
+      <h2 class="mb-4" style="font-weight: bold;">Import UTAK CSV</h2>
+      <p class="text-muted mb-4">Please select the daily attendance CSV file exported from the UTAK system.</p>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-4">
+          <input type="file" name="utak_csv" class="form-control form-control-lg rounded-pill" required
+                 style="border: 2px solid #d6ccc2;">
+        </div>
+        <button type="submit" class="btn btn-lg px-5 rounded-pill"
+                style="background-color: #d6ccc2; font-weight: bold; border: none;">
+          Upload and Process
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
