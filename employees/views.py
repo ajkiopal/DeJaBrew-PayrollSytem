@@ -88,12 +88,7 @@ def admin_employees_home(request):
 
                 duplicate_exists = Employee.objects.filter(
                     name=cleaned["name"],
-                    address=cleaned["address"],
-                    job_title=cleaned["job_title"],
-                    salary_rate=cleaned["salary_rate"],
                     contact_number=cleaned["contact_number"],
-                    date_hired=cleaned["date_hired"],
-                    role=cleaned["role"],
                 ).exists()
 
                 if duplicate_exists:
