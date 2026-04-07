@@ -39,8 +39,12 @@
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-4">
-          <input type="file" name="utak_csv" class="form-control form-control-lg rounded-pill" required
+          <input type="file" name="utak_csv" class="form-control form-control-lg rounded-pill" onchange="validateFile()" required
                  style="border: 2px solid #d6ccc2;">
+
+          <div id="error-message" class="text-danger mt-2" style="display: none; font-weight: 500;">
+              ⚠️ Error: This system only accepts .csv files. Please select a valid file.
+          </div>
         </div>
         <button type="submit" class="btn btn-lg px-5 rounded-pill"
                 style="background-color: #d6ccc2; font-weight: bold; border: none;">
@@ -50,4 +54,29 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function validateFile() {
+    const fileInput = document.getElementById('utak_csv_input');
+    const errorMsg = document.getElementById('error-message');
+    const submitBtn = document.getElementById('submit-btn');
+    const fileName = fileInput.value;
+    
+    // Check for .csv extension
+    if (!fileName.toLowerCase().endsWith('.csv')) {
+        errorMsg.style.display = 'block'; // Show error
+        submitBtn.disabled = true;        // Block the button
+        submitBtn.style.opacity = '0.5';
+        fileInput.classList.add('is-invalid');
+    } else {
+        errorMsg.style.display = 'none';  // Hide error
+        submitBtn.disabled = false;       // Unblock button
+        submitBtn.style.opacity = '1';
+        fileInput.classList.remove('is-invalid');
+        fileInput.classList.add('is-valid');
+    }
+}
+</script>
 {% endblock %}
