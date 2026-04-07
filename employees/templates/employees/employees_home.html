@@ -8,18 +8,15 @@
     --tableHead:#cbb6a8;
     --cellBorder:#e6dfdb;
     --white:#fff;
-
     --danger:#ff0000;
     --ok:#1aa657;
     --shadow:0 10px 28px rgba(0,0,0,.10);
-
     --modalBg:#d9d2ce;
     --inputBg:#f4f1ef;
     --inputBorder:#e3dbd7;
     --muted:#7a7a7a;
   }
 
-  /* Layout inside base_app.html .content container */
   .main{
     margin-top:18px;
     display:flex;
@@ -27,12 +24,38 @@
     align-items:flex-start;
   }
 
-  .left-icons{display:flex;flex-direction:column;gap:34px;padding-top:18px;}
-  .left-icons a{width:64px;height:64px;display:grid;place-items:center;text-decoration:none;}
-  .left-icons svg{width:54px;height:54px;}
+  .left-icons{
+    display:flex;
+    flex-direction:column;
+    gap:34px;
+    padding-top:18px;
+  }
 
-  .table-wrap{flex:1;background:transparent;padding-top:10px;}
-  table{width:100%;border-collapse:collapse;background:transparent;}
+  .left-icons a{
+    width:64px;
+    height:64px;
+    display:grid;
+    place-items:center;
+    text-decoration:none;
+  }
+
+  .left-icons svg{
+    width:54px;
+    height:54px;
+  }
+
+  .table-wrap{
+    flex:1;
+    background:transparent;
+    padding-top:10px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:transparent;
+  }
+
   thead th{
     background:var(--tableHead);
     font-size:18px;
@@ -41,6 +64,7 @@
     padding:16px 10px;
     border:1px solid var(--cellBorder);
   }
+
   tbody td{
     background:var(--white);
     font-size:16px;
@@ -50,6 +74,7 @@
     border:1px solid var(--cellBorder);
     vertical-align:middle;
   }
+
   .col-wide{width:220px;}
   .col-mid{width:160px;}
   .idcol{width:120px;}
@@ -66,27 +91,75 @@
     line-height:1;
     white-space:nowrap;
   }
-  .reset-btn:hover{ background:rgba(255,0,0,.08); }
+
+  .reset-btn:hover{
+    background:rgba(255,0,0,.08);
+  }
+
+  .edit-btn{
+    display:inline-block;
+    background:var(--ok);
+    color:#fff;
+    font-weight:700;
+    padding:7px 16px;
+    border-radius:18px;
+    text-decoration:none;
+    font-size:13px;
+    line-height:1;
+    white-space:nowrap;
+  }
+
+  .edit-btn:hover{
+    opacity:.9;
+  }
 
   .toast-wrap{
-    position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
-    display:flex;flex-direction:column;gap:10px;z-index:3000;
+    position:fixed;
+    left:50%;
+    bottom:26px;
+    transform:translateX(-50%);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:3000;
   }
+
   .toast{
-    background:#fff;border-radius:20px;box-shadow:var(--shadow);
-    padding:14px 22px;font-weight:900;font-size:16px;
-    min-width:340px;text-align:center;animation:toastIn .18s ease-out;
+    background:#fff;
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:14px 22px;
+    font-weight:900;
+    font-size:16px;
+    min-width:340px;
+    text-align:center;
+    animation:toastIn .18s ease-out;
   }
+
   .toast.success{border-left:8px solid var(--ok);}
   .toast.error{border-left:8px solid var(--danger);}
-  @keyframes toastIn{from{transform:translateY(10px);opacity:.3}to{transform:translateY(0);opacity:1}}
-  @keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
+
+  @keyframes toastIn{
+    from{transform:translateY(10px);opacity:.3}
+    to{transform:translateY(0);opacity:1}
+  }
+
+  @keyframes toastOut{
+    from{opacity:1;transform:translateY(0)}
+    to{opacity:0;transform:translateY(10px)}
+  }
 
   .overlay{
-    position:fixed;inset:0;background:rgba(0,0,0,.25);
-    display:flex;justify-content:center;align-items:center;
-    padding:18px;z-index:2000;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.25);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:18px;
+    z-index:2000;
   }
+
   .modal{
     width:min(980px, 100%);
     background:var(--modalBg);
@@ -110,24 +183,36 @@
     align-items:baseline;
     flex-wrap:wrap;
   }
+
   .mtitle{
     font-size:34px;
     font-weight:900;
     line-height:1.1;
     letter-spacing:.2px;
   }
+
   .merror{
     font-size:26px;
     font-weight:700;
     color:var(--danger);
     line-height:1.1;
   }
+
+  .merrorSub{
+    font-size:14px;
+    font-weight:600;
+    color:var(--danger);
+    margin-top:10px;
+  }
+
   .close{
-    width:40px;height:40px;
+    width:40px;
+    height:40px;
     border-radius:8px;
     background:var(--danger);
     color:#fff;
-    display:grid;place-items:center;
+    display:grid;
+    place-items:center;
     text-decoration:none;
     font-size:26px;
     font-weight:900;
@@ -136,13 +221,34 @@
     flex:0 0 auto;
   }
 
-  .divider{height:1px;background:#cfc7c2;margin:16px 0;}
+  .divider{
+    height:1px;
+    background:#cfc7c2;
+    margin:16px 0;
+  }
 
-  .grid{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .row3{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
-  .full{grid-column:1/-1;}
+  .grid{
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
 
-  .field{position:relative;}
+  .row3{
+    grid-column:1/-1;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:16px;
+  }
+
+  .full{
+    grid-column:1/-1;
+  }
+
+  .field{
+    position:relative;
+  }
+
   .inp,.sel{
     width:100%;
     padding:16px 18px;
@@ -154,8 +260,16 @@
     background:var(--inputBg);
     color:#000;
   }
-  .field.error .inp,.field.error .sel{border-color:var(--danger);}
-  .inp::placeholder{ color:var(--muted); font-weight:500; }
+
+  .field.error .inp,
+  .field.error .sel{
+    border-color:var(--danger);
+  }
+
+  .inp::placeholder{
+    color:var(--muted);
+    font-weight:500;
+  }
 
   .star{
     position:absolute;
@@ -165,20 +279,25 @@
     font-weight:900;
     color:var(--danger);
   }
+
   .err{
     margin-top:6px;
     font-size:12px;
     font-weight:500;
     color:var(--danger);
   }
+
   .actions{
     margin-top:18px;
     display:flex;
     justify-content:center;
     gap:18px;
   }
+
   .btnGreen{
-    background:var(--ok);color:#fff;border:0;
+    background:var(--ok);
+    color:#fff;
+    border:0;
     font-weight:900;
     padding:14px 46px;
     border-radius:22px;
@@ -186,8 +305,16 @@
     font-size:16px;
     min-width:160px;
   }
+
+  .btnGreen:disabled{
+    opacity:.7;
+    cursor:not-allowed;
+  }
+
   .btnRed{
-    background:#000;color:#fff;border:0;
+    background:#000;
+    color:#fff;
+    border:0;
     font-weight:900;
     padding:14px 46px;
     border-radius:22px;
@@ -195,7 +322,11 @@
     font-size:16px;
     min-width:160px;
   }
-  .date-field .inp{ padding-top:28px; }
+
+  .date-field .inp{
+    padding-top:28px;
+  }
+
   .date-label{
     position:absolute;
     left:18px;
@@ -209,11 +340,16 @@
     padding:0 6px;
     border-radius:8px;
   }
+
+  .reset-panel{
+    margin-top:18px;
+    display:flex;
+    justify-content:center;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-
   <div class="toast-wrap" id="toastWrap">
     {% for message in messages %}
       <div class="toast {% if 'error' in message.tags %}error{% else %}success{% endif %}">
@@ -231,16 +367,18 @@
         </svg>
       </a>
 
-      <a href="{% url 'admin_employees_home' %}?mode=edit" title="Edit Employees">
+      <a href="{% url 'admin_employees_home' %}?mode=reset" title="Reset Password">
         <svg viewBox="0 0 64 64" fill="none">
-          <path d="M32 12l5 8 10-2-2 10 8 5-8 5 2 10-10-2-5 8-5-8-10 2 2-10-8-5 8-5-2-10 10 2 5-8Z"
-                stroke="#000" stroke-width="3"/>
-          <circle cx="32" cy="32" r="8" stroke="#000" stroke-width="3"/>
+          <rect x="16" y="28" width="32" height="22" rx="5" stroke="#000" stroke-width="3"/>
+          <path d="M22 28v-6c0-5.523 4.477-10 10-10s10 4.477 10 10v6" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="39" r="3" fill="#000"/>
+          <path d="M32 42v4" stroke="#000" stroke-width="3" stroke-linecap="round"/>
         </svg>
       </a>
     </div>
 
     <div class="table-wrap">
+      {% if employees %}
       <table>
         <thead>
           <tr>
@@ -252,19 +390,11 @@
             <th class="col-mid">Title</th>
             <th class="col-mid">Role</th>
             <th class="col-mid">Salary<br>Rate /hr</th>
-            <th class="col-mid">Password</th>
+            <th class="col-mid">Action</th>
           </tr>
         </thead>
-
         <tbody>
-          {% if employees|length == 0 %}
-            <tr>
-              <td colspan="9" style="padding:26px;font-weight:900;background:#fff;">
-                {{ empty_message }}
-              </td>
-            </tr>
-          {% else %}
-            {% for e in employees %}
+          {% for e in employees %}
             <tr>
               <td>{{ e.employee_id|stringformat:"04d" }}</td>
               <td>{{ e.name|linebreaksbr }}</td>
@@ -273,18 +403,21 @@
               <td>{{ e.date_hired|date:"m/d/Y"|linebreaksbr }}</td>
               <td>{{ e.job_title }}</td>
               <td>{{ e.role }}</td>
-              <td>{{ e.salary_rate|floatformat:2 }}</td>
+              <td>{{ e.salary_rate }}</td>
               <td>
-                <form method="post" action="{% url 'employee_reset_password' employee_id=e.employee_id %}">
-                  {% csrf_token %}
-                  <button class="reset-btn" type="submit">Reset Password</button>
-                </form>
+                <a class="edit-btn" href="{% url 'admin_employees_home' %}?mode=edit&id={{ e.employee_id }}">
+                  Edit
+                </a>
               </td>
             </tr>
-            {% endfor %}
-          {% endif %}
+          {% endfor %}
         </tbody>
       </table>
+      {% else %}
+      <div style="background:#fff;border-radius:18px;padding:40px 20px;text-align:center;font-size:24px;font-weight:900;box-shadow:var(--shadow);">
+        No employees added yet.
+      </div>
+      {% endif %}
     </div>
   </div>
 
@@ -301,26 +434,34 @@
         <a class="close" href="{% url 'admin_employees_home' %}" aria-label="Close modal">×</a>
       </div>
 
-      <form method="post">
+      <form method="post" id="addEmployeeForm">
         {% csrf_token %}
         <input type="hidden" name="action" value="add">
+
+        {% if add_form.non_field_errors %}
+        <div class="merrorSub">
+          {% for err in add_form.non_field_errors %}
+            <div>{{ err }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
 
         <div class="grid">
           <div class="field {% if add_form.name.errors %}error{% endif %}">
             {{ add_form.name }}
-            {% if add_form.name.errors %}<div class="star">*</div>{% endif %}
+            {% if show_add_validation and "This field is required." in add_form.name.errors %}<div class="star">*</div>{% endif %}
             {% for err in add_form.name.errors %}<div class="err">{{ err }}</div>{% endfor %}
           </div>
 
           <div class="field {% if add_form.role.errors %}error{% endif %}">
             {{ add_form.role }}
-            {% if add_form.role.errors %}<div class="star">*</div>{% endif %}
+            {% if show_add_validation and "This field is required." in add_form.role.errors %}<div class="star">*</div>{% endif %}
             {% for err in add_form.role.errors %}<div class="err">{{ err }}</div>{% endfor %}
           </div>
 
           <div class="field full {% if add_form.address.errors %}error{% endif %}">
             {{ add_form.address }}
-            {% if add_form.address.errors %}<div class="star">*</div>{% endif %}
+            {% if show_add_validation and "This field is required." in add_form.address.errors %}<div class="star">*</div>{% endif %}
             {% for err in add_form.address.errors %}<div class="err">{{ err }}</div>{% endfor %}
           </div>
 
@@ -332,13 +473,13 @@
 
             <div class="field {% if add_form.salary_rate.errors %}error{% endif %}">
               {{ add_form.salary_rate }}
-              {% if add_form.salary_rate.errors %}<div class="star">*</div>{% endif %}
+              {% if show_add_validation and "This field is required." in add_form.salary_rate.errors %}<div class="star">*</div>{% endif %}
               {% for err in add_form.salary_rate.errors %}<div class="err">{{ err }}</div>{% endfor %}
             </div>
 
             <div class="field {% if add_form.contact_number.errors %}error{% endif %}">
               {{ add_form.contact_number }}
-              {% if add_form.contact_number.errors %}<div class="star">*</div>{% endif %}
+              {% if show_add_validation and "This field is required." in add_form.contact_number.errors %}<div class="star">*</div>{% endif %}
               {% for err in add_form.contact_number.errors %}<div class="err">{{ err }}</div>{% endfor %}
             </div>
           </div>
@@ -346,13 +487,13 @@
           <div class="field date-field {% if add_form.date_hired.errors %}error{% endif %}">
             <span class="date-label">Date Hired</span>
             {{ add_form.date_hired }}
-            {% if add_form.date_hired.errors %}<div class="star">*</div>{% endif %}
+            {% if show_add_validation and "This field is required." in add_form.date_hired.errors %}<div class="star">*</div>{% endif %}
             {% for err in add_form.date_hired.errors %}<div class="err">{{ err }}</div>{% endfor %}
           </div>
         </div>
 
         <div class="actions">
-          <button class="btnGreen" type="submit">Add</button>
+          <button class="btnGreen" type="submit" id="addEmployeeBtn">Add</button>
         </div>
       </form>
     </div>
@@ -396,19 +537,19 @@
         <div class="grid">
           <div class="field {% if edit_form.name.errors %}error{% endif %}">
             {{ edit_form.name }}
-            {% if edit_form.name.errors %}<div class="star">*</div>{% endif %}
+            {% if show_edit_validation and "This field is required." in edit_form.name.errors %}<div class="star">*</div>{% endif %}
             {% for err in edit_form.name.errors %}<div class="err">{{ err }}</div>{% endfor %}
           </div>
 
           <div class="field {% if edit_form.role.errors %}error{% endif %}">
             {{ edit_form.role }}
-            {% if edit_form.role.errors %}<div class="star">*</div>{% endif %}
+            {% if show_edit_validation and "This field is required." in edit_form.role.errors %}<div class="star">*</div>{% endif %}
             {% for err in edit_form.role.errors %}<div class="err">{{ err }}</div>{% endfor %}
           </div>
 
           <div class="field full {% if edit_form.address.errors %}error{% endif %}">
             {{ edit_form.address }}
-            {% if edit_form.address.errors %}<div class="star">*</div>{% endif %}
+            {% if show_edit_validation and "This field is required." in edit_form.address.errors %}<div class="star">*</div>{% endif %}
             {% for err in edit_form.address.errors %}<div class="err">{{ err }}</div>{% endfor %}
           </div>
 
@@ -420,13 +561,13 @@
 
             <div class="field {% if edit_form.salary_rate.errors %}error{% endif %}">
               {{ edit_form.salary_rate }}
-              {% if edit_form.salary_rate.errors %}<div class="star">*</div>{% endif %}
+              {% if show_edit_validation and "This field is required." in edit_form.salary_rate.errors %}<div class="star">*</div>{% endif %}
               {% for err in edit_form.salary_rate.errors %}<div class="err">{{ err }}</div>{% endfor %}
             </div>
 
             <div class="field {% if edit_form.contact_number.errors %}error{% endif %}">
               {{ edit_form.contact_number }}
-              {% if edit_form.contact_number.errors %}<div class="star">*</div>{% endif %}
+              {% if show_edit_validation and "This field is required." in edit_form.contact_number.errors %}<div class="star">*</div>{% endif %}
               {% for err in edit_form.contact_number.errors %}<div class="err">{{ err }}</div>{% endfor %}
             </div>
           </div>
@@ -434,7 +575,7 @@
           <div class="field date-field {% if edit_form.date_hired.errors %}error{% endif %}">
             <span class="date-label">Date Hired</span>
             {{ edit_form.date_hired }}
-            {% if edit_form.date_hired.errors %}<div class="star">*</div>{% endif %}
+            {% if show_edit_validation and "This field is required." in edit_form.date_hired.errors %}<div class="star">*</div>{% endif %}
             {% for err in edit_form.date_hired.errors %}<div class="err">{{ err }}</div>{% endfor %}
           </div>
         </div>
@@ -459,6 +600,40 @@
   </div>
   {% endif %}
 
+  {% if mode == "reset" %}
+  <div class="overlay">
+    <div class="modal">
+      <div class="mhead">
+        <div>
+          <div class="titleRow">
+            <div class="mtitle">Reset Password</div>
+          </div>
+        </div>
+        <a class="close" href="{% url 'admin_employees_home' %}" aria-label="Close modal">×</a>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <select id="resetEmployeeSelect" class="sel">
+          <option value="">Choose an employee…</option>
+          {% for e in employees %}
+            <option value="{{ e.employee_id }}">
+              {{ e.employee_id|stringformat:"04d" }} - {{ e.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="reset-panel" id="resetActionWrap" style="display:none;">
+        <form id="resetForm" method="post">
+          {% csrf_token %}
+          <button class="reset-btn" type="submit" id="resetPasswordBtn">Reset Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -469,6 +644,22 @@
       sel.addEventListener("change", function(){
         if(!sel.value) return;
         window.location.href = "{% url 'admin_employees_home' %}?mode=edit&id=" + encodeURIComponent(sel.value);
+      });
+    }
+
+    const resetSel = document.getElementById("resetEmployeeSelect");
+    const resetWrap = document.getElementById("resetActionWrap");
+    const resetForm = document.getElementById("resetForm");
+
+    if(resetSel && resetWrap && resetForm){
+      resetSel.addEventListener("change", function(){
+        if(!resetSel.value){
+          resetWrap.style.display = "none";
+          resetForm.removeAttribute("action");
+          return;
+        }
+        resetWrap.style.display = "flex";
+        resetForm.action = "/employees/" + encodeURIComponent(resetSel.value) + "/reset-password/";
       });
     }
 
@@ -493,6 +684,34 @@
       toasts.forEach(t => t.style.animation = "toastOut .18s ease-in forwards");
       setTimeout(() => { wrap.innerHTML = ""; }, 220);
     }, 3000);
+  })();
+
+  (function(){
+    const addForm = document.getElementById("addEmployeeForm");
+    const addBtn = document.getElementById("addEmployeeBtn");
+
+    if(addForm && addBtn){
+      addForm.addEventListener("submit", function(){
+        addBtn.disabled = true;
+        addBtn.textContent = "Adding...";
+        addBtn.style.opacity = "0.7";
+        addBtn.style.cursor = "not-allowed";
+      });
+    }
+  })();
+
+  (function(){
+    const resetForm = document.getElementById("resetForm");
+    const resetBtn = document.getElementById("resetPasswordBtn");
+
+    if(resetForm && resetBtn){
+      resetForm.addEventListener("submit", function(){
+        resetBtn.disabled = true;
+        resetBtn.textContent = "Resetting...";
+        resetBtn.style.opacity = "0.7";
+        resetBtn.style.cursor = "not-allowed";
+      });
+    }
   })();
 </script>
 {% endblock %}

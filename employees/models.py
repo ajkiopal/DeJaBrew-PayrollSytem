@@ -13,11 +13,11 @@ class Employee(models.Model):
     employee_id = models.AutoField(primary_key=True)
 
     # UC-04 columns
-    name = models.CharField(max_length=100)
-    address = models.CharField(max_length=255)
-    contact_number = models.CharField(max_length=20) 
+    name = models.CharField(max_length=50)
+    address = models.CharField(max_length=150)
+    contact_number = models.CharField(max_length=13) 
     date_hired = models.DateField(default=date.today)  
-    job_title = models.CharField(max_length=50)
+    job_title = models.CharField(max_length=25)
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
     salary_rate = models.DecimalField(max_digits=10, decimal_places=2)
 
