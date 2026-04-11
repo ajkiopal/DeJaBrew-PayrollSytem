@@ -13,6 +13,7 @@ from .models import PayPeriod, PayrollRun
 from employees.models import Employee
 from computations.models import AttendanceSummary, PayrollRecord, PayrollEmployeeProfile
 from computations.services import build_or_update_payroll_record
+from computations.views import generate_attendance_summaries
 
 
 # ✅ Session-based admin permission (matches your existing login system)
@@ -59,6 +60,9 @@ def payroll_run_create_page(request):
                     status="RUNNING",
                     created_by=None,  # keep as None since you're not using Django auth
                 )
+
+                # generate summaries first
+                generate_attendance_summaries(request)
 
                 created_or_updated = 0
                 skipped_missing_summary = 0
