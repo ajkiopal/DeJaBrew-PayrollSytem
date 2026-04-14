@@ -1,10 +1,13 @@
+import csv
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
+
+from django.shortcuts import get_object_or_404
 
 from employees.models import Employee as CoreEmployee
 from .models import PayPeriod, PayrollRun
@@ -162,3 +165,61 @@ def pay_period_close(request, period_id):
     period.save()
     messages.success(request, "Pay period closed.")
     return redirect("pay_periods")
+
+
+@admin_required
+def export_payroll_csv(request, run_id):
+    run = get_object_or_404(PayrollRun, pk=run_id)
+    
+    # We filter records that fall WITHIN the period dates
+    records = PayrollRecord.objects.filter(
+        payroll_period_start__gte=run.period.start_date,
+        payroll_period_end__lte=run.period.end_date
+    ).select_related('employee')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="Master_Payroll_{run.period}.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Employee ID', 'Name', 'Gross Pay', 'Net Pay'])
+
+    for rec in records:
+        writer.writerow([
+            f"{rec.employee.employee_id:04d}", 
+            rec.employee.name, 
+            rec.gross_pay, 
+            rec.net_pay
+        ])
+
+    return response
+
+@admin_required
+def export_individual_payslip(request, record_id):
+    # 1. Get the specific record for one person
+    record = get_object_or_404(PayrollRecord, pk=record_id)
+    
+    # 2. Get their attendance for the breakdown
+    summary = AttendanceSummary.objects.filter(
+        employee=record.employee,
+        payroll_period_start=record.payroll_period_start,
+        payroll_period_end=record.payroll_period_end
+    ).first()
+
+    # 3. Setup Response
+    filename = f"Payslip_{record.employee.employee_id}_{record.payroll_period_end}.csv"
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    writer = csv.writer(response)
+    
+    # 4. Format as a "Slip" rather than a table
+    writer.writerow(['DE JABREW PAYROLL SLIP'])
+    writer.writerow(['Employee:', record.employee.name])
+    writer.writerow(['Period:', f"{record.payroll_period_start} to {record.payroll_period_end}"])
+    writer.writerow([]) # Empty line
+    writer.writerow(['EARNINGS', 'AMOUNT'])
+    writer.writerow(['Regular Hours', summary.total_regular_hours if summary else 0])
+    writer.writerow(['Gross Pay', record.gross_pay])
+    writer.writerow(['Net Pay', record.net_pay])
+    
+    return response

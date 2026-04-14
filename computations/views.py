@@ -276,16 +276,15 @@ def generate_attendance_summaries(request):
 
     # Now write into AttendanceSummary
     for (emp_id, p_start, p_end), total_hours in buckets.items():
-        # Map raw attendance employee_id -> employees.Employee.employee_id
-        emp = CoreEmployee.objects.filter(employee_id=emp_id, is_active=True).first()
-        if not emp:
+        # USE GET INSTEAD OF FILTER TO ENSURE ACCURACY
+        try:
+            emp = CoreEmployee.objects.get(employee_id=emp_id, is_active=True)
+        except CoreEmployee.DoesNotExist:
             skipped += 1
             continue
 
-        # For demo: treat all hours as regular hours.
-        # You can later split into overtime/late/undertime if you have rules.
         obj, was_created = AttendanceSummary.objects.update_or_create(
-            employee=emp,
+            employee=emp, # This ensures the ForeignKey is perfect
             payroll_period_start=p_start,
             payroll_period_end=p_end,
             defaults={

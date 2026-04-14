@@ -164,6 +164,10 @@
 <div class="local-actions">
   <a href="{% url 'payroll_run_create' %}" class="btn-dark-soft">Run Payroll</a>
   <a href="{% url 'pay_periods' %}" class="btn-outline-soft">Manage Pay Periods</a>
+  <a href="{% url 'export_payroll_csv' run.id %}" class="btn-outline-soft" 
+     style="border-color: #146c43; color: #146c43;">
+     Export CSV
+  </a>
 </div>
 
 <div class="content-card">

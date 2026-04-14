@@ -22,4 +22,6 @@ urlpatterns = [
     path("runs/<int:run_id>/", views.payroll_run_detail, name="payroll_run_detail"),
     path("periods/", views.pay_period_list_create, name="pay_periods"),
     path("periods/<int:period_id>/close/", views.pay_period_close, name="pay_period_close"),
+    path('export/<int:run_id>/', views.export_payroll_csv, name='export_payroll_csv'),
+    path('payslip/<int:record_id>/', views.export_individual_payslip, name='export_individual_payslip'),
 ]

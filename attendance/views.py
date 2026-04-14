@@ -11,6 +11,7 @@ from django.utils.dateparse import parse_datetime
 from django.views.decorators.http import require_http_methods
 from django.db.utils import OperationalError
 
+from computations.models import AttendanceSummary
 from employees.models import Employee
 from . import models
 from .forms import CSVUploadForm
@@ -142,6 +143,24 @@ def upload_csv(request):
                     source_system="UTAK",
                 )
                 success_count += 1
+
+                duration = end_dt - start_dt
+                hours_worked = duration.total_seconds() / 3600.0
+
+                p_start = datetime(2026, 5, 16).date()
+                p_end = datetime(2026, 5, 30).date()
+
+                employee_obj = Employee.objects.get(employee_id=emp_id)
+
+                summary, created = AttendanceSummary.objects.get_or_create(
+                    employee=employee_obj,
+                    payroll_period_start=p_start,
+                    payroll_period_end=p_end,
+                    defaults={'total_regular_hours': 0.0, 'total_overtime_hours': 0.0}
+                )
+
+                summary.total_regular_hours += float(hours_worked)
+                summary.save()
 
             except Exception as e:
                 error_count += 1
