@@ -122,3 +122,41 @@ def staff_home(request):
 
     # You said to replace accounts/staff_home.html with templates/base_staff.html
     return render(request, "base_staff.html", {"employee": emp})
+
+
+@require_http_methods(["GET", "POST"])
+def change_password_view(request):
+    emp_id = request.session.get("employee_id")
+    if not emp_id:
+        return redirect("login")
+
+    emp = Employee.objects.filter(employee_id=emp_id, is_active=True).first()
+    if not emp:
+        request.session.flush()
+        return redirect("login")
+
+    error = None
+
+    if request.method == "POST":
+        old_pw = request.POST.get("old_pw", "")
+        new_pw1 = request.POST.get("new_pw1", "")
+        new_pw2 = request.POST.get("new_pw2", "")
+
+        if not check_password(old_pw, emp.password_hash):
+            error = "Current password is incorrect."
+        elif new_pw1 != new_pw2:
+            error = "New passwords do not match."
+        elif not new_pw1:
+            error = "New password cannot be empty."
+        else:
+            emp.password_hash = make_password(new_pw1)
+            emp.must_change_password = False
+            emp.save()
+
+            messages.success(request, "Password changed successfully.")
+            return redirect("post_login")
+
+    return render(request, "accounts/change_password.html", {
+        "employee": emp,
+        "error": error,
+    })
