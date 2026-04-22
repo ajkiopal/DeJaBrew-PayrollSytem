@@ -65,10 +65,12 @@
       </div>
 
       <div class="right">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="#000" stroke-width="2"/>
-          <path d="M4 22a8 8 0 0 1 16 0" stroke="#000" stroke-width="2"/>
-        </svg>
+        <a href="{% url 'change_password' %}" title="Change Password" style="display:grid;place-items:center;">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="#000" stroke-width="2"/>
+            <path d="M4 22a8 8 0 0 1 16 0" stroke="#000" stroke-width="2"/>
+          </svg>
+        </a>
 
         <form method="post" action="{% url 'logout' %}" style="margin:0;">
           {% csrf_token %}
