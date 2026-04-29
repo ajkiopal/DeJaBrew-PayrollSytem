@@ -58,8 +58,8 @@
 
       <div class="tabs">
         <a class="tab {% block nav_employees_active %}{% endblock %}" href="{% url 'admin_employees_home' %}">Employees</a>
-        <a class="tab" href="#" title="Not implemented yet">Shift Management</a>
-        <a class="tab" href="#" title="Not implemented yet">View Requests</a>
+        <a class="tab {% block nav_schedule_active %}{% endblock %}" href="{% url 'admin_schedule_home' %}">Shift Management</a>
+        <a class="tab {% block nav_requests_active %}{% endblock %}" href="{% url 'admin_requests_home' %}">View Requests</a>
         <a class="tab {% block nav_payroll_active %}{% endblock %}"href="{% url 'payroll_run_create' %}">Payroll</a>
         <a class="tab {% block nav_attendance_active %}{% endblock %}" href="{% url 'upload_csv' %}">Upload CSV</a>
       </div>
