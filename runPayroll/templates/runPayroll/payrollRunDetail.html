@@ -1,0 +1,249 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Payroll Run Details{% endblock %}
+
+{% block nav_payroll_active %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  .content-card{
+    background:#fff;
+    border-radius:20px;
+    padding:28px;
+    box-shadow:0 10px 28px rgba(0,0,0,.10);
+  }
+
+  .local-actions{
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+
+  .local-actions a{
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:10px;
+    font-weight:600;
+  }
+
+  .btn-dark-soft{
+    background:#000;
+    color:#fff;
+  }
+
+  .btn-outline-soft{
+    border:1px solid #000;
+    color:#000;
+    background:#fff;
+  }
+
+  .page-title{
+    margin:0 0 18px 0;
+    font-size:32px;
+    font-weight:800;
+  }
+
+  .section-title{
+    margin:0 0 16px 0;
+    font-size:24px;
+    font-weight:700;
+  }
+
+  .detail-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:14px 24px;
+    margin-bottom:24px;
+  }
+
+  .detail-item{
+    padding:14px 16px;
+    border:1px solid #eee;
+    border-radius:14px;
+    background:#fafafa;
+  }
+
+  .detail-label{
+    font-size:14px;
+    font-weight:700;
+    color:#666;
+    margin-bottom:6px;
+  }
+
+  .detail-value{
+    font-size:16px;
+    font-weight:600;
+    color:#000;
+  }
+
+  .table-wrap{
+    overflow-x:auto;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:6px;
+  }
+
+  thead{
+    background:#cbb6a8;
+  }
+
+  th, td{
+    text-align:left;
+    padding:14px 12px;
+    border-bottom:1px solid #eee;
+    vertical-align:middle;
+  }
+
+  th{
+    font-size:15px;
+    font-weight:800;
+  }
+
+  .text-end{
+    text-align:right;
+  }
+
+  .status-pill{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:700;
+  }
+
+  .status-open{
+    background:#e9f8ef;
+    color:#146c43;
+  }
+
+  .status-closed,
+  .status-done{
+    background:#f1f1f1;
+    color:#666;
+  }
+
+  .yes-text{
+    color:#146c43;
+    font-weight:700;
+  }
+
+  .no-text{
+    color:#b42318;
+    font-weight:700;
+  }
+
+  .empty-text{
+    color:#666;
+  }
+
+  .back-link{
+    display:inline-block;
+    margin-top:18px;
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:10px;
+    font-weight:600;
+    background:#000;
+    color:#fff;
+  }
+
+  @media (max-width: 800px){
+    .detail-grid{
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="local-actions">
+  <a href="{% url 'payroll_run_create' %}" class="btn-dark-soft">Run Payroll</a>
+  <a href="{% url 'pay_periods' %}" class="btn-outline-soft">Manage Pay Periods</a>
+</div>
+
+<div class="content-card">
+  <h1 class="page-title">Payroll Run Details</h1>
+
+  <div class="detail-grid">
+    <div class="detail-item">
+      <div class="detail-label">Period</div>
+      <div class="detail-value">{{ run.period }}</div>
+    </div>
+
+    <div class="detail-item">
+      <div class="detail-label">Status</div>
+      <div class="detail-value">
+        {% if run.status == "OPEN" %}
+          <span class="status-pill status-open">{{ run.status }}</span>
+        {% else %}
+          <span class="status-pill status-done">{{ run.status }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="detail-item">
+      <div class="detail-label">Created</div>
+      <div class="detail-value">{{ run.created_at }}</div>
+    </div>
+
+    <div class="detail-item">
+      <div class="detail-label">Completed</div>
+      <div class="detail-value">
+        {% if run.completed_at %}
+          {{ run.completed_at }}
+        {% else %}
+          —
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Computed Payroll Records</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee ID</th>
+          <th>Name</th>
+          <th class="text-end">Gross Pay</th>
+          <th class="text-end">Net Pay</th>
+          <th>Finalized?</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in records %}
+          <tr>
+            <td>{{ r.employee.employee_id|stringformat:"04d" }}</td>
+            <td>{{ r.employee.name }}</td>
+            <td class="text-end">₱{{ r.gross_pay }}</td>
+            <td class="text-end"><strong>₱{{ r.net_pay }}</strong></td>
+            <td>
+              {% if r.is_finalized %}
+                <span class="yes-text">Yes</span>
+              {% else %}
+                <span class="no-text">No</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="empty-text">
+              No computed payroll records yet for this period.
+              (Likely missing AttendanceSummary.)
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <a href="{% url 'payroll_run_create' %}" class="back-link">Back</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base_admin.html" %}
+{% block content %}
+
+<div style="max-width: 800px; margin: 10px auto;">
+    <a href="{% url 'admin_payslip_list' %}" style="text-decoration: none; color: #666; display: flex; align-items: center; width: fit-content; transition: color 0.2s;" onmouseover="this.style.color='#2c3e50'" onmouseout="this.style.color='#666'">
+        <span style="font-size: 1.5em; margin-right: 8px;">&larr;</span> 
+        <span style="font-size: 1em; font-weight: 500;">Back to List</span>
+    </a>
+</div>
+
+<div id="payslip-view" style="background: white; padding: 40px; border: 1px solid #ddd; max-width: 800px; margin: 0 auto 40px auto; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px;">
+    <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px;">
+        <h1 style="margin: 0; color: #2c3e50;">DEJABREW COFFEE</h1>
+        <p style="margin: 5px 0; font-weight: bold;">Payroll Statement</p>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin: 20px 0;">
+        <div>
+            <strong>EMPLOYEE:</strong> {{ employee.name }}<br>
+            <strong>ID:</strong> {{ employee.employee_id|stringformat:"04d" }}<br>
+            <strong>HOURLY RATE:</strong> ₱{{ employee.salary_rate }}
+        </div>
+        <div style="text-align: right;">
+            <strong>PERIOD:</strong> {{ record.payroll_period_start }} to {{ record.payroll_period_end }}<br>
+            <strong>DATE GENERATED:</strong> {% now "F d, Y" %}
+        </div>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background: #f4f4f4; font-weight: bold;">
+            <td style="padding: 10px; border: 1px solid #ddd;">EARNINGS</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">AMOUNT</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                <strong>Regular Pay</strong><br>
+                <span style="font-size: 0.85em; color: #666;">
+                    ({{ payroll.total_hours|floatformat:2 }} hours @ ₱{{ employee.salary_rate }}/hr)
+                </span>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right; vertical-align: middle;">
+                ₱{{ payroll.regular_pay }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd;">Overtime Pay</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₱{{ payroll.overtime_pay }}</td>
+        </tr>
+        <tr style="font-weight: bold;">
+            <td style="padding: 10px; border: 1px solid #ddd;">GROSS EARNINGS</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">₱{{ payroll.gross_earnings }}</td>
+        </tr>
+    </table>
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="background: #f4f4f4; font-weight: bold;">
+            <td style="padding: 10px; border: 1px solid #ddd;">DEDUCTIONS</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">AMOUNT</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd;">SSS Premium (5%)</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #d9534f;">-₱{{ payroll.sss }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd;">PhilHealth (2.5%)</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #d9534f;">-₱{{ payroll.philhealth }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd;">Pag-IBIG (Contribution)</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #d9534f;">-₱{{ payroll.pagibig }}</td>
+        </tr>
+        <tr style="font-weight: bold; background: #fffcfc;">
+            <td style="padding: 10px; border: 1px solid #ddd;">TOTAL GOV DEDUCTIONS</td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: right; color: #d9534f;">-₱{{ payroll.total_gov_deductions }}</td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 30px; padding: 20px; background: #2c3e50; color: white; display: flex; justify-content: space-between; align-items: center; border-radius: 5px;">
+        <span style="font-size: 1.2em; font-weight: bold;">NET TAKE-HOME PAY:</span>
+        <span style="font-size: 2em; font-weight: bold;">₱{{ payroll.net_pay }}</span>
+    </div>
+</div>
+{% endblock %}
