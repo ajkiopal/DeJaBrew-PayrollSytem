@@ -46,33 +46,46 @@
 
   .table-wrap{
     flex:1;
-    background:transparent;
     padding-top:10px;
   }
 
   table{
     width:100%;
-    border-collapse:collapse;
-    background:transparent;
+    border-collapse:separate;
+    border-spacing:0;
+    background:#fff;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
   }
 
   thead th{
-    background:var(--tableHead);
-    font-size:18px;
-    font-weight:1000;
+    background:#cbb6a8;
+    font-size:16px;
+    font-weight:800;
     text-align:center;
-    padding:16px 10px;
-    border:1px solid var(--cellBorder);
+    padding:18px 12px;
+    color:#3b2f2f;
+    border:none;
   }
 
   tbody td{
-    background:var(--white);
-    font-size:16px;
-    font-weight:400;
+    background:#fffdfb;
+    font-size:15px;
+    font-weight:500;
     text-align:center;
-    padding:20px 12px;
-    border:1px solid var(--cellBorder);
+    padding:18px 12px;
+    color:#3b2f2f;
+    border-top:1px solid #eee4dd;
     vertical-align:middle;
+  }
+
+  tbody tr:hover td{
+    background:#f4eee9;
+  }
+
+  tbody tr:first-child td{
+    border-top:none;
   }
 
   .col-wide{width:220px;}
