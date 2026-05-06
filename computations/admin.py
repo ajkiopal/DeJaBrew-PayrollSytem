@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import AttendanceSummary, PayrollRecord, AdjustmentRecord
 
-# Register your models here.
+admin.site.register(AttendanceSummary)
+admin.site.register(PayrollRecord)
+admin.site.register(AdjustmentRecord)

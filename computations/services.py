@@ -20,31 +20,34 @@ def compute_gross_from_profile_and_summary(profile: PayrollEmployeeProfile, summ
 
 
 @transaction.atomic
-def build_or_update_payroll_record(employee: Employee, summary: AttendanceSummary) -> PayrollRecord:
-    """
-    Ensures PayrollRecord exists for employee+period and updates gross/net using current rules + saved adjustments.
-    Returns the PayrollRecord (source of truth for Payroll Run app).
-    """
+def build_or_update_payroll_record(employee: Employee, summary: AttendanceSummary, payroll_run=None) -> PayrollRecord:
     profile = PayrollEmployeeProfile.objects.select_for_update().get(employee=employee)
 
     gross_pay = compute_gross_from_profile_and_summary(profile, summary)
 
-    pr, _ = PayrollRecord.objects.get_or_create(
+    pr, created = PayrollRecord.objects.get_or_create(
         employee=employee,
         payroll_period_start=summary.payroll_period_start,
         payroll_period_end=summary.payroll_period_end,
-        defaults={"gross_pay": gross_pay, "net_pay": gross_pay, "is_finalized": False},
+        defaults={
+            "payroll_run": payroll_run,
+            "gross_pay": gross_pay, 
+            "net_pay": gross_pay, 
+            "is_finalized": False
+        },
     )
 
-    # Update gross
     pr.gross_pay = gross_pay
+    if payroll_run:
+        pr.payroll_run = payroll_run
 
-    # Sum adjustments
     total_adj = (
         AdjustmentRecord.objects
         .filter(payroll_record=pr)
-        .aggregate(total=models.Sum("amount"))["total"] or Decimal("0")
+        .aggregate(total=Sum("amount"))["total"] or Decimal("0") # Changed models.Sum to Sum
     )
+
     pr.net_pay = gross_pay + total_adj
+    
     pr.save()
     return pr

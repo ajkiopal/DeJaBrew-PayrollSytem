@@ -1,5 +1,6 @@
 from django.db import models
 from employees.models import Employee
+from runPayroll.models import PayrollRun
 
 
 class PayrollEmployeeProfile(models.Model):
@@ -28,6 +29,13 @@ class AttendanceSummary(models.Model):
 
 class PayrollRecord(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    payroll_run = models.ForeignKey(
+        'runPayroll.PayrollRun', 
+        on_delete=models.CASCADE, 
+        related_name='records', 
+        null=True, 
+        blank=True
+    )
     payroll_period_start = models.DateField()
     payroll_period_end = models.DateField()
     gross_pay = models.DecimalField(max_digits=12, decimal_places=2, default=0)

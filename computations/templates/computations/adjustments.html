@@ -1,90 +1,204 @@
 {% extends "base_admin.html" %}
-{% block nav_payroll_active %}active{% endblock %}
+
+{% block nav_adjustments_active %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .adj-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        margin-top: 20px;
+    }
+    .adj-header {
+        border-bottom: 2px solid var(--nav);
+        padding-bottom: 12px;
+        margin-bottom: 24px;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+    .payroll-summary {
+        background: #fafafa;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .summary-item strong {
+        display: block;
+        color: #555;
+        font-size: 14px;
+    }
+    .summary-item span {
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .net-pay span {
+        color: var(--ok);
+        font-size: 24px;
+    }
+    .btn-submit {
+        background: var(--nav);
+        color: var(--navText);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    .btn-submit:hover {
+        opacity: 0.8;
+    }
+    .alert {
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+    .alert-error { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }
+    .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #4ade80; }
+    
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+    }
+    .history-table th, .history-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    .history-table th {
+        background: #f5f5f5;
+        font-weight: 600;
+    }
+    .text-success { color: var(--ok); font-weight: bold; }
+    .text-danger { color: var(--danger); font-weight: bold; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="card content-card shadow-sm p-4 mt-4">
-
-    <div class="table-custom-header p-3 mb-3" style="border-bottom: 2px solid #0d6efd;">
-        <h4 class="mb-0">Payroll Adjustments</h4>
+<div class="adj-card">
+    <div class="adj-header">
+        <h2 style="margin: 0;">Payroll Adjustments</h2>
     </div>
 
-    <div class="mb-4">
-        <label for="employee_id" class="form-label fw-bold">Select Employee</label>
-        <select onchange="window.location.href='/computations/adjustments/' + this.value + '/'">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if error_msg %}
+        <div class="alert alert-error">
+            {{ error_msg }}
+        </div>
+    {% endif %}
+
+    <div class="form-group">
+        <label for="employee_id">Select Employee</label>
+        <select class="form-control" onchange="window.location.href='/computations/adjustments/' + this.value + '/'">
             {% for emp in employees %}
                 <option value="{{ emp.employee_id }}" {% if emp.employee_id == selected_employee.employee_id %}selected{% endif %}>
-                    {{ emp.full_name }} ({{ emp.employment_type }})
+                    {{ emp.name }} ({{ emp.employment_type|default:"Employee" }})
                 </option>
             {% endfor %}
         </select>
     </div>
 
     {% if payroll %}
-        <div class="bg-light p-3 rounded mb-4 border">
-            <h5 class="text-primary">Payroll Period: {{ payroll.payroll_period_start }} to {{ payroll.payroll_period_end }}</h5>
-            <div class="row mt-3">
-                <div class="col-md-4"><strong>Gross Pay:</strong> ₱{{ payroll.gross_pay }}</div>
-                <div class="col-md-4"><strong>Total Adjustments:</strong> ₱{{ payroll.total_adjustments }}</div>
-                <div class="col-md-4 text-success fs-5"><strong>Net Pay: ₱{{ payroll.net_pay }}</strong></div>
+        <div class="payroll-summary">
+            <div style="width: 100%;">
+                <h4 style="margin: 0 0 16px 0; color: var(--navText);">
+                    Period: {{ payroll.payroll_period_start }} to {{ payroll.payroll_period_end }}
+                </h4>
+            </div>
+            <div class="summary-item">
+                <strong>Gross Pay</strong>
+                <span>₱{{ payroll.gross_pay }}</span>
+            </div>
+            <div class="summary-item">
+                <strong>Total Adjustments</strong>
+                <span>₱{{ payroll.total_adjustments }}</span>
+            </div>
+            <div class="summary-item net-pay">
+                <strong>Net Pay</strong>
+                <span>₱{{ payroll.net_pay }}</span>
             </div>
         </div>
 
-        {% if audit_log %}
-            <div class="alert alert-success mt-3 shadow-sm">
-                <strong>Success!</strong> Adjustment of ₱{{ last_adjustment.amount }} applied successfully.<br>
-                <small>Reason: {{ last_adjustment.justification }}</small>
-            </div>
-        {% endif %}
-
-        <h5 class="mt-4 border-bottom pb-2">Add Manual Adjustment</h5>
-        <form method="post" class="mt-3">
-            {% csrf_token %}
-            <input type="hidden" name="employee_id" value="{{ selected_employee.employee_id }}">
-            
-            <div class="mb-3">
-                <label class="form-label fw-bold">Adjustment Amount (₱)</label>
-                <input type="number" step="0.01" name="amount" class="form-control" required placeholder="e.g. 500.00 or -200.00">
-                <div class="form-text text-muted">
-                    <strong>Note:</strong> Enter a positive number for bonuses/additions. Use a minus sign (<strong>-</strong>) for deductions or penalties.
+        <div style="margin-top: 40px;">
+            <h3 style="border-bottom: 1px solid #eee; padding-bottom: 8px;">Add Manual Adjustment</h3>
+            <form method="post" style="margin-top: 20px;">
+                {% csrf_token %}
+                <input type="hidden" name="employee_id" value="{{ selected_employee.employee_id }}">
+                
+                <div class="form-group">
+                    <label>Adjustment Amount (₱)</label>
+                    <input type="number" step="0.01" name="amount" class="form-control" required placeholder="e.g. 500.00 or -200.00">
+                    <small style="color: #666; display: block; margin-top: 6px;">
+                        <strong>Note:</strong> Enter a positive number for bonuses. Use a minus sign (<strong>-</strong>) for deductions.
+                    </small>
                 </div>
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label fw-bold">Mandatory Justification</label>
-                <textarea name="justification" class="form-control" rows="3" required placeholder="Explain why this adjustment is necessary..."></textarea>
-            </div>
-            
-            <button type="submit" class="btn btn-primary px-4 shadow-sm">Apply Adjustment</button>
-        </form>
+                
+                <div class="form-group">
+                    <label>Mandatory Justification</label>
+                    <textarea name="justification" class="form-control" rows="3" required placeholder="Explain why this adjustment is necessary..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit">Apply Adjustment</button>
+            </form>
+        </div>
 
         {% if past_adjustments %}
-            <h5 class="mt-5 border-bottom pb-2">Adjustment History</h5>
-            <table class="table table-sm table-striped mt-3 border shadow-sm">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Time</th>
-                        <th>Amount</th>
-                        <th>Justification</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for past_adj in past_adjustments %}
-                    <tr>
-                        <td>{{ past_adj.timestamp|time:"H:i:s" }}</td>
-                        <td class="{% if past_adj.amount > 0 %}text-success{% else %}text-danger{% endif %} fw-bold">
-                            ₱{{ past_adj.amount }}
-                        </td>
-                        <td>{{ past_adj.justification }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div style="margin-top: 40px;">
+                <h3 style="border-bottom: 1px solid #eee; padding-bottom: 8px;">Adjustment History</h3>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Time / Date</th>
+                            <th>Amount</th>
+                            <th>Justification</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for past_adj in past_adjustments %}
+                        <tr>
+                            <td>{{ past_adj.timestamp|date:"M d, Y" }} {{ past_adj.timestamp|time:"H:i:s" }}</td>
+                            <td class="{% if past_adj.amount > 0 %}text-success{% else %}text-danger{% endif %}">
+                                ₱{{ past_adj.amount }}
+                            </td>
+                            <td>{{ past_adj.justification }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
 
-    {% else %}
-        <div class="alert alert-warning mt-3">
-            No payroll data found for this employee.
-        </div>
     {% endif %}
 
 </div>
