@@ -1,0 +1,368 @@
+{% extends "base_staff.html" %}
+{% block title %}Submit Request{% endblock %}
+{% block nav_staff_create_request %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root{
+    --card:#fff;
+    --accent:#cbb6a8;
+    --inputBg:#fffdfb;
+    --inputBorder:#e6dfdb;
+    --muted:#7a7a7a;
+    --ok:#1aa657;
+    --danger:#dc2626;
+    --shadow:0 10px 28px rgba(0,0,0,.10);
+  }
+
+  .request-page{
+    margin-top:18px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .request-card{
+    width:min(820px, 100%);
+    background:var(--card);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    padding:20px 24px 22px;
+  }
+
+  .mtitle{
+    font-size:28px;
+    font-weight:900;
+    line-height:1.1;
+  }
+
+  .divider{
+    height:1px;
+    background:#e6dfdb;
+    margin:14px 0;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:13px;
+  }
+
+  .full{
+    grid-column:1/-1;
+  }
+
+  .field{
+    position:relative;
+  }
+
+  .inp,
+  .sel{
+    width:100%;
+    padding:13px 16px;
+    border-radius:22px;
+    border:2px solid var(--inputBorder);
+    font-size:14px;
+    font-weight:500;
+    outline:none;
+    background:var(--inputBg);
+    color:#000;
+    box-sizing:border-box;
+  }
+
+  textarea.inp{
+    min-height:95px;
+    resize:vertical;
+  }
+
+  .date-field .inp,
+  .time-field .inp,
+  .readonly-field .inp,
+  .number-field .inp{
+    padding-top:25px;
+  }
+
+  .field-label{
+    position:absolute;
+    left:16px;
+    top:7px;
+    font-size:11px;
+    font-weight:600;
+    color:var(--muted);
+    pointer-events:none;
+    z-index:2;
+    background:var(--inputBg);
+    padding:0 6px;
+    border-radius:8px;
+  }
+
+  .error-text{
+    color:var(--danger);
+    font-size:12px;
+    font-weight:700;
+    margin:5px 0 0 10px;
+  }
+
+  .has-error .inp,
+  .has-error .sel{
+    border-color:var(--danger);
+  }
+
+  .hidden{
+    display:none;
+  }
+
+  .schedule-preview{
+    background:#fff9ee;
+    border:1px solid #e6dfdb;
+    border-radius:18px;
+    padding:14px 16px;
+    font-size:14px;
+    font-weight:700;
+  }
+
+  .schedule-preview span{
+    font-weight:500;
+  }
+
+  .actions{
+    margin-top:18px;
+    display:flex;
+    justify-content:center;
+    gap:14px;
+  }
+
+  .btnGreen,
+  .btnDark{
+    border:0;
+    font-weight:900;
+    padding:12px 38px;
+    border-radius:20px;
+    cursor:pointer;
+    font-size:15px;
+    min-width:140px;
+    text-decoration:none;
+    text-align:center;
+  }
+
+  .btnGreen{
+    background:var(--ok);
+    color:#fff;
+  }
+
+  .btnDark{
+    background:#000;
+    color:#fff;
+  }
+
+  .btnGreen:hover,
+  .btnDark:hover{
+    opacity:.9;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="request-page">
+  <div class="request-card">
+    <div class="mtitle">Submit Request</div>
+
+    <div class="divider"></div>
+    {% if errors %}
+      <div style="background: #fee2e2; border: 2px solid #ef4444; color: #b91c1c; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 10px 0;">Cannot Submit Request:</h4>
+        <ul style="margin: 0; padding-left: 20px;">
+          {% for field, message in errors.items %}
+            <li><strong>{{ field|title }}:</strong> {{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    <form method="post" id="requestForm">
+      {% csrf_token %}
+
+      <div class="grid">
+
+        <div class="field readonly-field">
+          <span class="field-label">ID Number</span>
+          <input class="inp" type="text" value="{{ employee_id|stringformat:'04d' }}" readonly>
+        </div>
+
+        <div class="field readonly-field">
+          <span class="field-label">Name</span>
+          <input class="inp" type="text" value="{{ employee_name }}" readonly>
+        </div>
+
+        <div class="field full {% if errors.request_type %}has-error{% endif %}">
+          <select class="sel" name="request_type" id="requestType" required>
+            <option value="">Choose Type of Request</option>
+            <option value="Schedule Change" {% if old.request_type == "Schedule Change" %}selected{% endif %}>Schedule Change</option>
+            <option value="Overtime" {% if old.request_type == "Overtime" %}selected{% endif %}>Overtime</option>
+          </select>
+          {% if errors.request_type %}
+            <div class="error-text">{{ errors.request_type }}</div>
+          {% endif %}
+        </div>
+
+        <div class="field full {% if errors.assigned_schedule %}has-error{% endif %}">
+          <select class="sel" name="assigned_schedule" id="assignedSchedule" required>
+            <option value="">Choose Assigned Schedule</option>
+            {% for s in assigned_schedules %}
+              <option
+                value="{{ s.id }}"
+                data-title="{{ s.title }}"
+                data-date="{{ s.date|date:'m/d/Y' }}"
+                data-start="{{ s.start_time|time:'g:i A' }}"
+                data-end="{{ s.end_time|time:'g:i A' }}"
+                {% if old.assigned_schedule == s.id|stringformat:"s" %}selected{% endif %}
+              >
+                {{ s.title }} — {{ s.date|date:"m/d/Y" }} — {{ s.start_time|time:"g:i A" }} to {{ s.end_time|time:"g:i A" }}
+              </option>
+            {% endfor %}
+          </select>
+          {% if errors.assigned_schedule %}
+            <div class="error-text">{{ errors.assigned_schedule }}</div>
+          {% endif %}
+        </div>
+
+        <div class="field full">
+          <div class="schedule-preview" id="schedulePreview">
+            Selected Schedule: <span id="previewText">None selected</span>
+          </div>
+        </div>
+
+        <div id="overtimeFields" class="field full hidden">
+          <div class="field number-field {% if errors.overtime_hours %}has-error{% endif %}">
+            <span class="field-label">Overtime Hours</span>
+            <input
+              class="inp"
+              type="number"
+              name="overtime_hours"
+              min="1"
+              step="1"
+              value="{{ old.overtime_hours }}"
+            >
+            {% if errors.overtime_hours %}
+              <div class="error-text">{{ errors.overtime_hours }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div id="scheduleChangeFields" class="full hidden">
+          <div class="grid">
+            <div class="field time-field {% if errors.new_start_time %}has-error{% endif %}">
+              <span class="field-label">New Start Time</span>
+              <input
+                class="inp"
+                type="time"
+                name="new_start_time"
+                value="{{ old.new_start_time }}"
+              >
+              {% if errors.new_start_time %}
+                <div class="error-text">{{ errors.new_start_time }}</div>
+              {% endif %}
+            </div>
+
+            <div class="field time-field {% if errors.new_end_time %}has-error{% endif %}">
+              <span class="field-label">New End Time</span>
+              <input
+                class="inp"
+                type="time"
+                name="new_end_time"
+                value="{{ old.new_end_time }}"
+              >
+              {% if errors.new_end_time %}
+                <div class="error-text">{{ errors.new_end_time }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="field full {% if errors.reason %}has-error{% endif %}">
+          <textarea
+            class="inp"
+            name="reason"
+            placeholder="Reason"
+            required
+          >{{ old.reason }}</textarea>
+          {% if errors.reason %}
+            <div class="error-text">{{ errors.reason }}</div>
+          {% endif %}
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button class="btnGreen" type="submit" id="submitRequestBtn">
+          Submit
+        </button>
+
+        <a class="btnDark" href="{% url 'staff_requests_home' %}">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 1. Get all elements
+  const requestType = document.getElementById("requestType");
+  const assignedSchedule = document.getElementById("assignedSchedule");
+  const overtimeFields = document.getElementById("overtimeFields");
+  const scheduleChangeFields = document.getElementById("scheduleChangeFields");
+  const previewText = document.getElementById("previewText");
+  const form = document.getElementById("requestForm");
+  const btn = document.getElementById("submitRequestBtn");
+
+  function updateFormFields() {
+    const type = requestType.value;
+    console.log("JS Triggered: Type is", type);
+
+    // Force hide using style directly to bypass CSS 'hidden' class
+    overtimeFields.style.display = "none";
+    scheduleChangeFields.style.display = "none";
+
+    // Show based on type
+    if (type === "Overtime") {
+      overtimeFields.style.display = "block";
+      overtimeFields.querySelector('input').required = true;
+    } else if (type === "Schedule Change") {
+      scheduleChangeFields.style.display = "block";
+      scheduleChangeFields.querySelectorAll('input').forEach(inp => inp.required = true);
+    }
+  }
+
+  function updateSchedulePreview() {
+    const selected = assignedSchedule.options[assignedSchedule.selectedIndex];
+    if (!selected || !selected.value) {
+      previewText.textContent = "None selected";
+      return;
+    }
+    const title = selected.dataset.title;
+    const date = selected.dataset.date;
+    const start = selected.dataset.start;
+    const end = selected.dataset.end;
+    previewText.textContent = `${title} — ${date}, ${start} to ${end}`;
+  }
+
+  // Listen for changes
+  requestType.addEventListener("change", updateFormFields);
+  assignedSchedule.addEventListener("change", updateSchedulePreview);
+
+  // Run on page load
+  updateFormFields();
+  updateSchedulePreview();
+
+  // Form submission visual feedback
+  form.addEventListener("submit", function (e) {
+    // Only disable if the form is actually valid
+    if (form.checkValidity()) {
+        btn.disabled = true;
+        btn.textContent = "Submitting...";
+        btn.style.opacity = "0.7";
+    }
+  });
+</script>
+{% endblock %}

@@ -23,8 +23,17 @@ def view_payslip_detail(request, record_id):
     record = get_object_or_404(PayrollRecord, id=record_id)
     employee = record.employee
     
-    user_role = request.session.get('role')
+    # 1. Update these to match your accounts/views.py session keys
+    user_role = request.session.get('employee_role') # Was 'role'
     session_emp_id = request.session.get('employee_id')
+
+    # 2. Update the check to match "Admin/Manager"
+    is_admin = (user_role == 'Admin/Manager')
+
+    # Security Guard
+    if not is_admin and str(session_emp_id) != str(employee.employee_id):
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied("You do not have permission to view this payslip.")
 
     summary = AttendanceSummary.objects.filter(
         employee=employee, 
@@ -40,14 +49,15 @@ def view_payslip_detail(request, record_id):
             **computed,
             "total_hours": summary.total_regular_hours if summary else 0,
             "net_pay": record.net_pay,
-            "total_gov_deductions": computed['total_gov_deductions']
+            "total_gov_deductions": computed.get('total_gov_deductions', 0)
         }
     }
-    if user_role == 'Admin':
+
+    # 3. Use the updated is_admin boolean
+    if is_admin:
         return render(request, "payroll/payslip_template.html", context)
-    else:
-        return render(request, "payroll/staff_payslip_template.html", context)
-    return render(request, "payroll/payslip_template.html", context)
+    
+    return render(request, "payroll/staff_payslip_template.html", context)
 
 def staff_payslip_list(request):
     # Get the ID from the session[cite: 1]

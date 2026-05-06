@@ -1,0 +1,205 @@
+{% extends "base_admin.html" %}
+{% block title %}Requests{% endblock %}
+{% block nav_requests_active %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root{
+    --tableHead:#cbb6a8;
+    --cellBorder:#e6dfdb;
+    --white:#fff;
+    --shadow:0 10px 28px rgba(0,0,0,.10);
+  }
+
+  .main{
+    margin-top:18px;
+    display:flex;
+    gap:22px;
+    align-items:flex-start;
+  }
+
+  .table-wrap{
+    flex:1;
+    background:transparent;
+    padding-top:10px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:transparent;
+  }
+
+  thead th{
+    background:var(--tableHead);
+    font-size:18px;
+    font-weight:1000;
+    text-align:center;
+    padding:16px 10px;
+    border:1px solid var(--cellBorder);
+  }
+
+  tbody td{
+    background:var(--white);
+    font-size:15px;
+    font-weight:400;
+    text-align:center;
+    padding:18px 12px;
+    border:1px solid var(--cellBorder);
+    vertical-align:middle;
+  }
+
+  .idcol{
+    width:120px;
+  }
+
+  .namecol{
+    width:180px;
+  }
+
+  .typecol{
+    width:180px;
+  }
+
+  .datecol{
+    width:140px;
+  }
+
+  .timecol{
+    width:140px;
+  }
+
+  .reasoncol{
+    width:240px;
+  }
+
+  .statuscol{
+    width:150px;
+  }
+
+  .status-pending{
+    color:#d97706;
+    font-weight:700;
+  }
+
+  .status-approved{
+    color:#16a34a;
+    font-weight:700;
+  }
+
+  .status-rejected{
+    color:#dc2626;
+    font-weight:700;
+  }
+
+  .empty-box{
+    background:#fff;
+    border-radius:18px;
+    padding:40px 20px;
+    text-align:center;
+    font-size:24px;
+    font-weight:900;
+    box-shadow:var(--shadow);
+  }
+
+.btn-approve, .btn-reject {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    text-align: center;
+    transition: opacity 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-approve {
+    background-color: #16a34a; /* Green */
+    color: white;
+  }
+
+  .btn-reject {
+    background-color: #dc2626; /* Red */
+    color: white;
+  }
+
+  .btn-approve:hover, .btn-reject:hover {
+    opacity: 0.8;
+  }
+
+  .action-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    padding-top: 5px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+
+  <div class="table-wrap">
+    {% if requests %}
+    <table>
+      <thead>
+        <tr>
+          <th class="idcol">ID<br>Number</th>
+          <th class="namecol">Name</th>
+          <th class="typecol">Type of<br>Request</th>
+          <th class="datecol">Date</th>
+          <th class="timecol">Time</th>
+          <th class="reasoncol">Reason</th>
+          <th class="statuscol">Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for r in requests %}
+        <tr>
+          <td>{{ r.employee_id|stringformat:"04d" }}</td>
+          <td>{{ r.employee_name }}</td>
+          <td>{{ r.request_type }}</td>
+          
+          <!-- FIX: Date is inside the assigned_schedule model -->
+          <td>{{ r.assigned_schedule.date|date:"m/d/Y" }}</td>
+          
+          <!-- FIX: Show Overtime Hours OR New Times -->
+          <td>
+            {% if r.request_type == "Overtime" %}
+              {{ r.overtime_hours }} hr{% if r.overtime_hours != 1 %}s{% endif %}
+            {% else %}
+              {{ r.new_start_time|time:"g:i A" }} - {{ r.new_end_time|time:"g:i A" }}
+            {% endif %}
+          </td>
+          
+          <td>{{ r.reason }}</td>
+
+          <td>
+            {% if r.status == "Pending" %}
+              <div class="action-container">
+                <span class="status-pending">{{ r.status }}</span>
+                <a href="{% url 'approve_request' r.id %}" class="btn-approve">Approve</a>
+                <a href="{% url 'reject_request' r.id %}" class="btn-reject">Reject</a>
+              </div>
+            {% else %}
+              <span class="status-{{ r.status|lower }}">{{ r.status }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% else %}
+    <div class="empty-box">
+      No requests submitted yet.
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

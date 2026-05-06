@@ -1,0 +1,143 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Run Payroll{% endblock %}
+
+{% block nav_payroll_active %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  .content-card{
+    background:#fff;
+    border-radius:20px;
+    padding:28px;
+    box-shadow:0 10px 28px rgba(0,0,0,.10);
+  }
+
+  .local-actions{
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+
+  .local-actions a{
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:10px;
+    font-weight:600;
+  }
+
+  .btn-dark-soft{
+    background:#000;
+    color:#fff;
+  }
+
+  .btn-outline-soft{
+    border:1px solid #000;
+    color:#000;
+    background:#fff;
+  }
+
+  .page-title{
+    margin:0 0 18px 0;
+    font-size:32px;
+    font-weight:800;
+  }
+
+  .form-label{
+    font-weight:600;
+    margin-bottom:8px;
+    display:block;
+  }
+
+  .form-select{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid #ccc;
+    font-size:16px;
+    background:#fff;
+  }
+
+  .run-btn{
+    margin-top:8px;
+    background:#000;
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:12px 18px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  .msg{
+    padding:12px 14px;
+    border-radius:12px;
+    margin-bottom:14px;
+    font-weight:500;
+  }
+
+  .msg-success{
+    background:#e9f8ef;
+    color:#146c43;
+    border:1px solid #b7ebc6;
+  }
+
+  .msg-error{
+    background:#fdecec;
+    color:#b42318;
+    border:1px solid #f5c2c7;
+  }
+
+  .muted-note{
+    margin-top:10px;
+    color:#666;
+    font-size:14px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="local-actions">
+  <a href="{% url 'payroll_run_create' %}" class="btn-dark-soft">Run Payroll</a>
+  <a href="{% url 'pay_periods' %}" class="btn-outline-soft">Manage Pay Periods</a>
+</div>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="msg {% if message.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="content-card">
+  <h1 class="page-title">Run Payroll</h1>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <label for="period_id" class="form-label">Select Pay Period</label>
+    <select name="period_id" id="period_id" class="form-select" required>
+      <option value="">Select...</option>
+      {% for p in periods %}
+        <option value="{{ p.id }}">
+          {% if p.label %}
+            {{ p.label }}
+          {% else %}
+            {{ p.start_date }} to {{ p.end_date }}
+          {% endif %}
+        </option>
+      {% endfor %}
+    </select>
+
+    <p class="muted-note">
+      Only open pay periods appear here. If a period has already been run, the system will block duplicates.
+    </p>
+
+    <button type="submit" class="run-btn">Run Payroll</button>
+  </form>
+</div>
+
+{% endblock %}
