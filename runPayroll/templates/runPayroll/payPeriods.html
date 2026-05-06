@@ -240,6 +240,7 @@
           <th>Period</th>
           <th>Status</th>
           <th style="width:150px;">Action</th>
+          <th style="width:150px;">Results</th>
         </tr>
       </thead>
       <tbody>
@@ -269,6 +270,18 @@
                 </form>
               {% else %}
                 <span class="status-closed">Closed</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if p.runs.all %}
+                {% for run in p.runs.all %}
+                  <a href="{% url 'payroll_run_detail' run.id %}" 
+                    style="text-decoration:none; color:#146c43; font-weight:700;">
+                    View Details
+                  </a>
+                {% endfor %}
+              {% else %}
+                <span style="color:#999; font-size:12px;">No Run Yet</span>
               {% endif %}
             </td>
           </tr>

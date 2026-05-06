@@ -1,10 +1,13 @@
+import csv
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.http import require_http_methods
+
+from django.shortcuts import get_object_or_404
 
 from employees.models import Employee as CoreEmployee
 from .models import PayPeriod, PayrollRun
@@ -13,6 +16,7 @@ from .models import PayPeriod, PayrollRun
 from employees.models import Employee
 from computations.models import AttendanceSummary, PayrollRecord, PayrollEmployeeProfile
 from computations.services import build_or_update_payroll_record
+from computations.views import generate_attendance_summaries
 
 
 # ✅ Session-based admin permission (matches your existing login system)
@@ -60,6 +64,9 @@ def payroll_run_create_page(request):
                     created_by=None,  # keep as None since you're not using Django auth
                 )
 
+                # generate summaries first
+                generate_attendance_summaries(request)
+
                 created_or_updated = 0
                 skipped_missing_summary = 0
                 skipped_missing_profile = 0
@@ -81,7 +88,7 @@ def payroll_run_create_page(request):
                         skipped_missing_summary += 1
                         continue
 
-                    build_or_update_payroll_record(emp, summary)
+                    build_or_update_payroll_record(emp, summary, payroll_run=run)
                     created_or_updated += 1
 
                 run.status = "COMPLETED"
@@ -111,8 +118,7 @@ def payroll_run_detail(request, run_id):
     run = get_object_or_404(PayrollRun, pk=run_id)
 
     records = PayrollRecord.objects.filter(
-        payroll_period_start=run.period.start_date,
-        payroll_period_end=run.period.end_date,
+        payroll_run=run
     ).select_related("employee").order_by("employee__employee_id")
 
     return render(request, "runPayroll/payrollRunDetail.html", {
@@ -158,3 +164,28 @@ def pay_period_close(request, period_id):
     period.save()
     messages.success(request, "Pay period closed.")
     return redirect("pay_periods")
+
+@admin_required
+def export_payroll_csv(request, run_id):
+    run = get_object_or_404(PayrollRun, pk=run_id)
+    
+    # We filter records that fall WITHIN the period dates
+    records = PayrollRecord.objects.filter(
+        payroll_run=run
+    ).select_related('employee')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="Master_Payroll_{run.period}.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Employee ID', 'Name', 'Gross Pay', 'Net Pay'])
+
+    for rec in records:
+        writer.writerow([
+            f"{rec.employee.employee_id:04d}", 
+            rec.employee.name, 
+            rec.gross_pay, 
+            rec.net_pay
+        ])
+
+    return response

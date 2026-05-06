@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import PayPeriod, PayrollRun
 
-# Register your models here.
+admin.site.register(PayrollRun)
+admin.site.register(PayPeriod)

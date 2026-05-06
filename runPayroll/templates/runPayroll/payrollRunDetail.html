@@ -38,6 +38,11 @@
     background:#fff;
   }
 
+  .btn-success-solid {
+    background: #146c43;
+    color: #fff;
+  }
+
   .page-title{
     margin:0 0 18px 0;
     font-size:32px;
@@ -162,8 +167,10 @@
 {% block content %}
 
 <div class="local-actions">
-  <a href="{% url 'payroll_run_create' %}" class="btn-dark-soft">Run Payroll</a>
+  <a href="{% url 'payroll_run_create' %}" class="btn-outline-soft">Run Payroll</a>
   <a href="{% url 'pay_periods' %}" class="btn-outline-soft">Manage Pay Periods</a>
+  <a href="{% url 'admin_payslip_list' %}?run_id={{ run.id }}" class="btn-outline-soft">View Payslips</a>
+  <a href="{% url 'export_payroll_csv' run.id %}" class="btn-success-solid">Export</a>
 </div>
 
 <div class="content-card">
@@ -235,7 +242,7 @@
           <tr>
             <td colspan="5" class="empty-text">
               No computed payroll records yet for this period.
-              (Likely missing AttendanceSummary and/or PayrollEmployeeProfile.)
+              (Likely missing AttendanceSummary.)
             </td>
           </tr>
         {% endfor %}
