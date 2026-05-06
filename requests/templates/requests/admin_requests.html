@@ -101,6 +101,41 @@
     font-weight:900;
     box-shadow:var(--shadow);
   }
+
+.btn-approve, .btn-reject {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    text-align: center;
+    transition: opacity 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-approve {
+    background-color: #16a34a; /* Green */
+    color: white;
+  }
+
+  .btn-reject {
+    background-color: #dc2626; /* Red */
+    color: white;
+  }
+
+  .btn-approve:hover, .btn-reject:hover {
+    opacity: 0.8;
+  }
+
+  .action-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    padding-top: 5px;
+  }
 </style>
 {% endblock %}
 
@@ -128,19 +163,30 @@
           <td>{{ r.employee_id|stringformat:"04d" }}</td>
           <td>{{ r.employee_name }}</td>
           <td>{{ r.request_type }}</td>
-          <td>{{ r.requested_date|date:"m/d/Y" }}</td>
-          <td>{{ r.start_time }} - {{ r.end_time }}</td>
+          
+          <!-- FIX: Date is inside the assigned_schedule model -->
+          <td>{{ r.assigned_schedule.date|date:"m/d/Y" }}</td>
+          
+          <!-- FIX: Show Overtime Hours OR New Times -->
+          <td>
+            {% if r.request_type == "Overtime" %}
+              {{ r.overtime_hours }} hr{% if r.overtime_hours != 1 %}s{% endif %}
+            {% else %}
+              {{ r.new_start_time|time:"g:i A" }} - {{ r.new_end_time|time:"g:i A" }}
+            {% endif %}
+          </td>
+          
           <td>{{ r.reason }}</td>
 
           <td>
             {% if r.status == "Pending" %}
-              <span class="status-pending">{{ r.status }}</span>
-            {% elif r.status == "Approved" %}
-              <span class="status-approved">{{ r.status }}</span>
-            {% elif r.status == "Rejected" %}
-              <span class="status-rejected">{{ r.status }}</span>
+              <div class="action-container">
+                <span class="status-pending">{{ r.status }}</span>
+                <a href="{% url 'approve_request' r.id %}" class="btn-approve">Approve</a>
+                <a href="{% url 'reject_request' r.id %}" class="btn-reject">Reject</a>
+              </div>
             {% else %}
-              {{ r.status }}
+              <span class="status-{{ r.status|lower }}">{{ r.status }}</span>
             {% endif %}
           </td>
         </tr>

@@ -106,6 +106,9 @@ def staff_request_create(request):
         if not reason:
             errors["reason"] = "Please enter a reason."
 
+        if errors:
+            print(f"DEBUG: Validation failed! Errors found: {errors}")
+
         if not errors:
             StaffRequest.objects.create(
                 employee_id=employee_id,
@@ -129,3 +132,25 @@ def staff_request_create(request):
         "errors": errors,
         "old": old,
     })
+
+def approve_request(request, request_id):
+    # Fetch the request or 404 if it doesn't exist
+    staff_request = get_object_or_404(StaffRequest, id=request_id)
+    
+    # Update status
+    staff_request.status = "Approved"
+    staff_request.save()
+    
+    messages.success(request, f"Request for {staff_request.employee_name} has been approved.")
+    return redirect("admin_requests_home")
+
+
+def reject_request(request, request_id):
+    staff_request = get_object_or_404(StaffRequest, id=request_id)
+    
+    # Update status
+    staff_request.status = "Rejected"
+    staff_request.save()
+    
+    messages.warning(request, f"Request for {staff_request.employee_name} has been rejected.")
+    return redirect("admin_requests_home")

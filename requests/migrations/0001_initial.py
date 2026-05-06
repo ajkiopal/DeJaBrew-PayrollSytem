@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('scheduling', '0002_scheduleevent_status'),
+        #('scheduling', '0002_scheduleevent_status'),
     ]
 
     operations = [

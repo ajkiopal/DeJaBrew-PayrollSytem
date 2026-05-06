@@ -1,6 +1,6 @@
 {% extends "base_staff.html" %}
 {% block title %}Submit Request{% endblock %}
-{% block nav_submit_request_active %}active{% endblock %}
+{% block nav_staff_create_request %}active{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -167,7 +167,16 @@
     <div class="mtitle">Submit Request</div>
 
     <div class="divider"></div>
-
+    {% if errors %}
+      <div style="background: #fee2e2; border: 2px solid #ef4444; color: #b91c1c; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+        <h4 style="margin: 0 0 10px 0;">Cannot Submit Request:</h4>
+        <ul style="margin: 0; padding-left: 20px;">
+          {% for field, message in errors.items %}
+            <li><strong>{{ field|title }}:</strong> {{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
     <form method="post" id="requestForm">
       {% csrf_token %}
 
@@ -298,59 +307,62 @@
 
 {% block extra_js %}
 <script>
-  const form = document.getElementById("requestForm");
-  const btn = document.getElementById("submitRequestBtn");
-
+  // 1. Get all elements
   const requestType = document.getElementById("requestType");
   const assignedSchedule = document.getElementById("assignedSchedule");
   const overtimeFields = document.getElementById("overtimeFields");
   const scheduleChangeFields = document.getElementById("scheduleChangeFields");
   const previewText = document.getElementById("previewText");
+  const form = document.getElementById("requestForm");
+  const btn = document.getElementById("submitRequestBtn");
 
   function updateFormFields() {
     const type = requestType.value;
+    console.log("JS Triggered: Type is", type);
 
-    overtimeFields.classList.add("hidden");
-    scheduleChangeFields.classList.add("hidden");
+    // Force hide using style directly to bypass CSS 'hidden' class
+    overtimeFields.style.display = "none";
+    scheduleChangeFields.style.display = "none";
 
+    // Show based on type
     if (type === "Overtime") {
-      overtimeFields.classList.remove("hidden");
-    }
-
-    if (type === "Schedule Change") {
-      scheduleChangeFields.classList.remove("hidden");
+      overtimeFields.style.display = "block";
+      overtimeFields.querySelector('input').required = true;
+    } else if (type === "Schedule Change") {
+      scheduleChangeFields.style.display = "block";
+      scheduleChangeFields.querySelectorAll('input').forEach(inp => inp.required = true);
     }
   }
 
   function updateSchedulePreview() {
     const selected = assignedSchedule.options[assignedSchedule.selectedIndex];
-
     if (!selected || !selected.value) {
       previewText.textContent = "None selected";
       return;
     }
-
     const title = selected.dataset.title;
     const date = selected.dataset.date;
     const start = selected.dataset.start;
     const end = selected.dataset.end;
-
     previewText.textContent = `${title} — ${date}, ${start} to ${end}`;
   }
 
+  // Listen for changes
   requestType.addEventListener("change", updateFormFields);
   assignedSchedule.addEventListener("change", updateSchedulePreview);
 
+  // Run on page load
   updateFormFields();
   updateSchedulePreview();
 
-  if (form && btn) {
-    form.addEventListener("submit", function () {
-      btn.disabled = true;
-      btn.textContent = "Submitting...";
-      btn.style.opacity = "0.7";
-      btn.style.cursor = "not-allowed";
-    });
-  }
+  // Form submission visual feedback
+  form.addEventListener("submit", function (e) {
+    // Only disable if the form is actually valid
+    if (form.checkValidity()) {
+        btn.disabled = true;
+        btn.textContent = "Submitting...";
+        btn.style.opacity = "0.7";
+    }
+  });
 </script>
 {% endblock %}
