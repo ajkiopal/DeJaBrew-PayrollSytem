@@ -58,19 +58,18 @@
 
       <div class="tabs">
         <a class="tab {% block nav_employees_active %}{% endblock %}" href="{% url 'admin_employees_home' %}">Employees</a>
-        <a class="tab {% block nav_schedule_active %}{% endblock %}" href="{% url 'admin_schedule_home' %}">Shift Management</a>
+        <a class="tab {% block nav_scheduling_active %}{% endblock %}" href="{% url 'admin_schedule_home' %}">Scheduling</a>
         <a class="tab {% block nav_requests_active %}{% endblock %}" href="{% url 'admin_requests_home' %}">View Requests</a>
+        <a class="tab {% block nav_adjustments_active %}{% endblock %}" href="{% url 'payroll_adjustments' %}">Adjustments</a>
         <a class="tab {% block nav_payroll_active %}{% endblock %}"href="{% url 'payroll_run_create' %}">Payroll</a>
         <a class="tab {% block nav_attendance_active %}{% endblock %}" href="{% url 'upload_csv' %}">Upload CSV</a>
       </div>
 
       <div class="right">
-        <a href="{% url 'change_password' %}" title="Change Password" style="display:grid;place-items:center;">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="#000" stroke-width="2"/>
-            <path d="M4 22a8 8 0 0 1 16 0" stroke="#000" stroke-width="2"/>
-          </svg>
-        </a>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="#000" stroke-width="2"/>
+          <path d="M4 22a8 8 0 0 1 16 0" stroke="#000" stroke-width="2"/>
+        </svg>
 
         <form method="post" action="{% url 'logout' %}" style="margin:0;">
           {% csrf_token %}

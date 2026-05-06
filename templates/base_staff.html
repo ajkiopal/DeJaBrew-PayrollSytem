@@ -114,12 +114,11 @@
       </div>
 
       <div class="tabs">
-        <a class="tab {% block nav_schedule_active %}{% endblock %}" href="{% url 'staff_schedule_home' %}">View Schedule</a>
-        <a class="tab {% block nav_submit_request_active %}{% endblock %}" href="{% url 'staff_request_create' %}">Submit Requests</a>
-        <a class="tab {% block nav_requests_active %}{% endblock %}" href="{% url 'staff_requests_home' %}">My Requests</a>
-        <a class="tab {% block nav_staff_payslips %}{% endblock %}" href="#">View Payslip</a>
+      <a class="tab {% block nav_staff_create_request %}{% endblock %}" href="{% url 'staff_request_create' %}">Submit Requests</a>
+      <a class="tab {% block nav_staff_requests_home %}{% endblock %}" href="{% url 'staff_requests_home' %}">My Requests</a>
+      <a class="tab {% block nav_staff_schedule %}{% endblock %}" href="{% url 'staff_schedule_home' %}">View Schedule</a>
+      <a class="tab {% block nav_staff_payslips %}{% endblock %}" href="{% url 'staff_payslips_home' %}">View Payslip</a>
       </div>
-
       <div class="right">
         <a href="{% url 'change_password' %}" title="Change Password" style="display:grid;place-items:center;">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
