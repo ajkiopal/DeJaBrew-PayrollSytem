@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+  <body>
+    <h2>Hi {{ employee.name }}</h2>
+    <p>You are logged in as: {{ employee.role }}</p>
+
+    <form method="POST" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+    </form>
+  </body>
+</html>
