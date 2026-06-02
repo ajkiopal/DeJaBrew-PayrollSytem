@@ -1,0 +1,86 @@
+{% extends "base_admin.html" %}
+{% block title %}Attendance History{% endblock %}
+{% block nav_attendance_active %}active{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  .layout { display:flex; gap:18px; align-items:flex-start; }
+
+  /* Make side panel match theme */
+  .side {
+    width:220px;
+    background: rgba(255,255,255,.65);   /* instead of pure white */
+    border-radius:18px;
+    padding:16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.10);
+  }
+
+  /* Make the main card match theme (not pure white) */
+  .content-card {
+    background: rgba(255,255,255,.65);
+    border-radius: 18px;
+    overflow: hidden;
+    border: none;
+  }
+
+  /* Optional: soften the table */
+  .table { margin: 0; }
+  .table td, .table th { background: transparent !important; }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="layout">
+  <div class="side">
+    <h5 class="fw-bold mb-3">Attendance</h5>
+    <a class="btn btn-outline-secondary w-100 rounded-pill mb-2" href="{% url 'upload_csv' %}">
+      Upload CSV
+    </a>
+    <a class="btn btn-outline-secondary w-100 rounded-pill" href="{% url 'import_history' %}">
+      History
+    </a>
+  </div>
+
+  <div style="flex:1;">
+    <div class="content-card shadow-sm">
+      <table class="table mb-0">
+        <thead>
+          <tr class="table-custom-header text-center">
+            <th class="py-3">Date Uploaded</th>
+            <th class="py-3">Filename</th>
+            <th class="py-3">Successes</th>
+            <th class="py-3">Errors</th>
+            <th class="py-3">Status</th>
+          </tr>
+        </thead>
+        <tbody class="text-center">
+          {% if history %}
+            {% for entry in history %}
+            <tr style="vertical-align: middle;">
+              <td class="py-4">{{ entry.date_uploaded|date:"m/d/Y" }}</td>
+              <td class="py-4"><code>{{ entry.filename }}</code></td>
+              <td class="py-4">{{ entry.success_count }}</td>
+              <td class="py-4">{{ entry.error_count }}</td>
+              <td class="py-4">
+                <span class="btn btn-outline-danger btn-sm rounded-pill" style="font-size: 0.8rem;">
+                  {{ entry.status }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="py-5 fw-bold text-muted">
+                No imports yet. Upload a CSV to see import history.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

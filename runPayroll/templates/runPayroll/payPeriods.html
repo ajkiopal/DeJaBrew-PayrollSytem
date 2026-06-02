@@ -1,0 +1,298 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Pay Periods{% endblock %}
+
+{% block nav_payroll_active %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  .content-card{
+    background:#fff;
+    border-radius:20px;
+    padding:28px;
+    box-shadow:0 10px 28px rgba(0,0,0,.10);
+  }
+
+  .local-actions{
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+
+  .local-actions a{
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:10px;
+    font-weight:600;
+  }
+
+  .btn-dark-soft{
+    background:#000;
+    color:#fff;
+  }
+
+  .btn-outline-soft{
+    border:1px solid #000;
+    color:#000;
+    background:#fff;
+  }
+
+  .page-title{
+    margin:0 0 18px 0;
+    font-size:32px;
+    font-weight:800;
+  }
+
+  .section-title{
+    margin:0 0 16px 0;
+    font-size:24px;
+    font-weight:700;
+  }
+
+  /* renamed from .row → safer */
+  .period-row{
+    display:grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap:16px;
+    margin-bottom:16px;
+  }
+
+  .col-3{ grid-column: span 3; }
+  .col-4{ grid-column: span 4; }
+  .col-2{ grid-column: span 2; }
+  .col-12{ grid-column: span 12; }
+
+  .form-label{
+    font-weight:600;
+    margin-bottom:8px;
+    display:block;
+  }
+
+  .form-control,
+  .form-select{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid #ccc;
+    font-size:16px;
+  }
+
+  .submit-btn{
+    background:#000;
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:12px 18px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  .msg{
+    padding:12px 14px;
+    border-radius:12px;
+    margin-bottom:14px;
+    font-weight:500;
+  }
+
+  .msg-success{
+    background:#e9f8ef;
+    color:#146c43;
+    border:1px solid #b7ebc6;
+  }
+
+  .msg-error{
+    background:#fdecec;
+    color:#b42318;
+    border:1px solid #f5c2c7;
+  }
+
+  .table-wrap{
+    overflow-x:auto;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:6px;
+  }
+
+  thead{
+    background:#cbb6a8;
+  }
+
+  th, td{
+    text-align:left;
+    padding:14px 12px;
+    border-bottom:1px solid #eee;
+  }
+
+  th{
+    font-size:15px;
+    font-weight:800;
+  }
+
+  .close-btn{
+    border:1px solid #000;
+    background:#fff;
+    color:#000;
+    border-radius:10px;
+    padding:8px 12px;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  .status-open{
+    color:#146c43;
+    font-weight:700;
+  }
+
+  .status-closed{
+    color:#666;
+    font-weight:700;
+  }
+
+  .helper-text{
+    margin-top:10px;
+    color:#666;
+    font-size:14px;
+  }
+
+  @media (max-width: 900px){
+    .col-3, .col-4, .col-2, .col-12{
+      grid-column: span 12;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="local-actions">
+  <a href="{% url 'payroll_run_create' %}" class="btn-outline-soft">Run Payroll</a>
+  <a href="{% url 'pay_periods' %}" class="btn-dark-soft">Manage Pay Periods</a>
+</div>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="msg {% if message.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="content-card" style="margin-bottom:22px;">
+  <h1 class="page-title">Pay Periods</h1>
+
+  <h2 class="section-title">Create Pay Period</h2>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="period-row">
+      <div class="col-3">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" name="start_date" id="start_date" class="form-control" required>
+      </div>
+
+      <div class="col-3">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" name="end_date" id="end_date" class="form-control" required>
+      </div>
+
+      <div class="col-4">
+        <label for="label" class="form-label">Label (optional)</label>
+        <input
+          type="text"
+          name="label"
+          id="label"
+          class="form-control"
+          placeholder="e.g. Feb 1 to Feb 15, 2026"
+        >
+      </div>
+
+      <div class="col-2">
+        <label for="status" class="form-label">Status</label>
+        <select name="status" id="status" class="form-select">
+          <option value="OPEN">Open</option>
+          <option value="CLOSED">Closed</option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <button type="submit" class="submit-btn">Create Period</button>
+      </div>
+    </div>
+
+    <p class="helper-text">
+      Overlapping pay periods are not allowed. If dates overlap, the system will show an error.
+    </p>
+  </form>
+</div>
+
+<div class="content-card">
+  <h2 class="section-title">Existing Pay Periods</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Status</th>
+          <th style="width:150px;">Action</th>
+          <th style="width:150px;">Results</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in periods %}
+          <tr>
+            <td>
+              {% if p.label %}
+                {{ p.label }}
+              {% else %}
+                {{ p.start_date }} to {{ p.end_date }}
+              {% endif %}
+            </td>
+
+            <td>
+              {% if p.status == "OPEN" %}
+                <span class="status-open">OPEN</span>
+              {% else %}
+                <span class="status-closed">CLOSED</span>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if p.status == "OPEN" %}
+                <form method="post" action="{% url 'pay_period_close' p.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="close-btn">Close</button>
+                </form>
+              {% else %}
+                <span class="status-closed">Closed</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if p.runs.all %}
+                {% for run in p.runs.all %}
+                  <a href="{% url 'payroll_run_detail' run.id %}" 
+                    style="text-decoration:none; color:#146c43; font-weight:700;">
+                    View Details
+                  </a>
+                {% endfor %}
+              {% else %}
+                <span style="color:#999; font-size:12px;">No Run Yet</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" style="color:#666;">No pay periods yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

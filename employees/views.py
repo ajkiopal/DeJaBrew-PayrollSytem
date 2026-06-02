@@ -3,9 +3,11 @@ from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
+from decimal import Decimal
 
 from .forms import EmployeeCreateForm, EmployeeEditForm
 from .models import Employee
+from computations.models import PayrollEmployeeProfile
 
 
 def admin_required(view_func):
@@ -99,6 +101,14 @@ def admin_employees_home(request):
                     emp.password_hash = make_password("00000")
                     emp.must_change_password = True
                     emp.save()
+
+                    PayrollEmployeeProfile.objects.create(
+                        employee=emp,
+                        base_hourly_rate=emp.salary_rate,
+                        # Convert 1.5 to a Decimal to match salary_rate
+                        overtime_hourly_rate=emp.salary_rate * Decimal('1.5'), 
+                        allowances=0
+                    )
 
                     messages.success(request, "Employee successfully added.")
                     return redirect("admin_employees_home")
