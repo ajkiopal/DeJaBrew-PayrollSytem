@@ -1,0 +1,87 @@
+{% extends "base_admin.html" %}
+{% block title %}Attendance Upload{% endblock %}
+{% block nav_attendance_active %}active{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  .layout { display:flex; gap:18px; align-items:flex-start; }
+  .side {
+    width:220px;
+    border-radius:18px;
+    padding:16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.10);
+  }
+  .maincard { flex:1; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="layout">
+  <div class="side">
+    <h5 class="fw-bold mb-3">Attendance</h5>
+    <a class="btn btn-outline-secondary w-100 rounded-pill mb-2" href="{% url 'upload_csv' %}">Upload CSV</a>
+    <a class="btn btn-outline-secondary w-100 rounded-pill mb-2" href="{% url 'import_history' %}">History</a>
+    <a class="btn btn-outline-secondary w-100 rounded-pill" href="{% url 'export_attendance' %}">Export Attendance</a>
+  </div>
+
+  <div class="maincard">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-pill mb-4 px-4" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="content-card shadow-sm p-5 text-center" style="background-color: white; border-radius: 25px;">
+      <h2 class="mb-4" style="font-weight: bold;">Import UTAK CSV</h2>
+      <p class="text-muted mb-4">Please select the daily attendance CSV file exported from the UTAK system.</p>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-4">
+          <input type="file" id="utak_csv_input" name="utak_csv" 
+                 class="form-control form-control-lg rounded-pill" 
+                 onchange="validateFile()" required
+                 style="border: 2px solid #d6ccc2;">
+
+          <div id="error-message" class="text-danger mt-2" style="display: none; font-weight: 500;">
+              ⚠️ Error: This system only accepts .csv files. Please select a valid file.
+          </div>
+        </div>
+        
+        <button type="submit" id="submit-btn" class="btn btn-lg px-5 rounded-pill"
+                style="background-color: #d6ccc2; font-weight: bold; border: none;">
+          Upload and Process
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function validateFile() {
+    const fileInput = document.getElementById('utak_csv_input');
+    const errorMsg = document.getElementById('error-message');
+    const submitBtn = document.getElementById('submit-btn');
+    const fileName = fileInput.value;
+    
+    if (!fileName.toLowerCase().endsWith('.csv')) {
+        errorMsg.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        fileInput.classList.add('is-invalid');
+    } else {
+        errorMsg.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        fileInput.classList.remove('is-invalid');
+        fileInput.classList.add('is-valid');
+    }
+}
+</script>
+{% endblock %}
