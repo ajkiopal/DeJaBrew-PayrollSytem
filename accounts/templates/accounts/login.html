@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | DejaBrew Payroll</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #d8cec8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 980px;
+            min-height: 560px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #f6f1ee;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .login-left {
+            background: #cbb6a8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 40px;
+        }
+
+        .logo-box {
+            text-align: center;
+        }
+
+        .logo-box img {
+            width: 100%;
+            max-width: 340px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 16px;
+        }
+
+        .login-right {
+            background: #fffaf7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 36px;
+        }
+
+        .login-form-box {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .login-form-box h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+            color: #2f2f2f;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #6b6b6b;
+            margin-bottom: 26px;
+        }
+
+        .error-box {
+            background: #ffe3e3;
+            color: #a12626;
+            border: 1px solid #f1b6b6;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d8ccc6;
+            border-radius: 12px;
+            background: #ffffff;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #b49787;
+            box-shadow: 0 0 0 3px rgba(180, 151, 135, 0.15);
+        }
+
+        .show-password {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: -6px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .show-password input {
+            width: 16px;
+            height: 16px;
+            accent-color: #b49787;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: #b49787;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background: #9f8475;
+        }
+
+        @media (max-width: 860px) {
+            .login-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .login-left {
+                padding: 36px 24px;
+            }
+
+            .logo-box img {
+                max-width: 240px;
+            }
+
+            .login-right {
+                padding: 36px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <div class="login-left">
+            <div class="logo-box">
+                <img src="{% static 'images/company-logo.png' %}" alt="Company Logo">
+            </div>
+        </div>
+
+        <div class="login-right">
+            <div class="login-form-box">
+                <h2>Login</h2>
+                <p class="subtitle">Enter your employee ID and password</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="error-box">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="employee_id">Employee ID</label>
+                        <input
+                            type="text"
+                            name="employee_id"
+                            id="employee_id"
+                            inputmode="numeric"
+                            pattern="[0-9]{4}"
+                            maxlength="4"
+                            placeholder="Enter your employee ID"
+                            autocomplete="off"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            maxlength="255"
+                            required
+                        >
+                    </div>
+
+                    <div class="show-password">
+                        <input type="checkbox" id="showPassword">
+                        <label for="showPassword">Show password</label>
+                    </div>
+
+                    <button type="submit" class="login-btn">Sign In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const employeeIdInput = document.getElementById("employee_id");
+
+        employeeIdInput.addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "").slice(0, 4);
+        });
+
+        const showPasswordCheckbox = document.getElementById("showPassword");
+        const passwordInput = document.getElementById("password");
+
+        showPasswordCheckbox.addEventListener("change", function () {
+            passwordInput.type = this.checked ? "text" : "password";
+        });
+    </script>
+</body>
+</html>
